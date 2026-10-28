@@ -14,6 +14,7 @@ var eigen_include: ?[]const u8 = null;
 var target_is_windows = false;
 var codegen: Codegen = undefined;
 var debug_build = false;
+var mimalloc_root: ?[]const u8 = null;
 var proto_flags: []const []const u8 = undefined;
 
 const native_default: std.Target.Query = if (builtin.os.tag == .linux)
@@ -105,6 +106,7 @@ pub fn build(b: *std.Build) void {
     deps_root = resolveDepsRoot(b, target);
     eigen_include = resolveEigen(b);
     debug_build = b.option(bool, "debug", "Build xdyn -O0 -g for gdb (deps stay optimized)") orelse false;
+    mimalloc_root = b.option([]const u8, "mimalloc", "mimalloc source tree linked into the executables as their malloc (default: the libc's)");
 
     installUnderBuildDir(b, target);
     codegen = addCodegen(b);
@@ -434,10 +436,30 @@ fn buildExe(
     m.linkLibrary(libxdyn);
     m.addObjectFile(.{ .cwd_relative = b.fmt("{s}/libxdyndeps_core.a", .{deps_root}) });
     linkWindowsSystemLibs(m);
+    if (mimalloc_root) |root| addMimalloc(b, m, target, root);
     const exe = b.addExecutable(.{ .name = spec.name, .root_module = m });
     exe.step.dependOn(codegen.step); // for the in-tree half of the codegen
     if (!target_is_windows) exe.pie = false; // prebuilt deps may be non-PIC (PIE is N/A on COFF)
     b.installArtifact(exe);
+}
+
+// zig's own libc malloc (std.heap.SmpAllocator behind c.malloc) does not hand freed blocks
+// back to later requests of the same size well enough for a long-running server:
+// xdyn-for-cs on a meshed hull grew ~0.2 MB per co-simulation step, 1.1 GB after 6000
+// steps, where glibc's malloc held 49 MB on the same requests. mimalloc's static.c, built
+// with MI_MALLOC_OVERRIDE, defines malloc/free/realloc/... strongly; zig's libc exports
+// them weakly, so the executable's malloc and libc++'s operator new both resolve to it.
+fn addMimalloc(b: *std.Build, m: *std.Build.Module, target: std.Build.ResolvedTarget, root: []const u8) void {
+    m.addIncludePath(.{ .cwd_relative = b.fmt("{s}/include", .{root}) });
+    const musl = target.result.abi.isMusl();
+    m.addCSourceFile(.{
+        .file = .{ .cwd_relative = b.fmt("{s}/src/static.c", .{root}) },
+        // Not our code: its warnings are not ours to keep clean, hence no -Werror.
+        .flags = withDebug(b, if (musl)
+            &.{ "-std=gnu11", "-DMI_MALLOC_OVERRIDE", "-DMI_LIBC_MUSL", "-DNDEBUG", "-fno-builtin-malloc", "-w" }
+        else
+            &.{ "-std=gnu11", "-DMI_MALLOC_OVERRIDE", "-DNDEBUG", "-fno-builtin-malloc", "-w" }),
+    });
 }
 
 // =============================================================================

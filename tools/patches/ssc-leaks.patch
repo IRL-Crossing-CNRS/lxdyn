@@ -1,0 +1,32 @@
+--- a/ssc/data_source/SignalContainer.hpp
++++ b/ssc/data_source/SignalContainer.hpp
+@@ -66,8 +66,13 @@
+                 template <typename T> void set(const std::string& signal_name, const T& value)
+                 {
+                     const TypedSignalName map_name(signal_name,typeid(T).name());
++                    const bool is_new_signal = signals_.find(map_name) == signals_.end();
+                     signals_[map_name] = value;
+-                    get_iterator_list(value).push_back(signals_.find(map_name));
++                    // One entry per signal, not per call: set() runs at every evaluation of
++                    // every model, and appending each time grew the list without bound
++                    // (xdyn-for-cs gained ~17 kB per co-simulation step on a BlueROV).
++                    // Updating a std::map entry keeps the stored iterator valid.
++                    if (is_new_signal) get_iterator_list(value).push_back(signals_.find(map_name));
+                 }
+ 
+                 template <typename T> T get(const std::string& signal_name) const
+--- a/ssc/kinematics/Kinematics.cpp
++++ b/ssc/kinematics/Kinematics.cpp
+@@ -137,8 +137,11 @@
+ 
+         kinematics::Transform get(const std::string& from_frame, const std::string& to_frame)
+         {
+-            ds.check_in(__PRETTY_FUNCTION__);
++            // Before check_in: this early return never checked out, so every identity
++            // lookup (a model expressed in its own body frame, several times per step)
++            // left one more entry on the DataSource's call stack.
+             if (from_frame == to_frame) return kinematics::identity(from_frame);
++            ds.check_in(__PRETTY_FUNCTION__);
+             try
+             {
+                 ds.check_out();

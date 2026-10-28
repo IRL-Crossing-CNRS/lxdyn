@@ -25,6 +25,7 @@
         "src-grpc": "src-grpc",
         "src-hdf5": "src-hdf5",
         "src-interfaces": "src-interfaces",
+        "src-mimalloc": "src-mimalloc",
         "src-ssc": "src-ssc",
         "src-stb": "src-stb",
         "src-websocketpp": "src-websocketpp",
@@ -129,6 +130,23 @@
         "owner": "naval-group",
         "repo": "interfaces",
         "rev": "5a3b79e3cc6c2a5c29f81d0316c0daa3d11f40d5",
+        "type": "github"
+      }
+    },
+    "src-mimalloc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749522185,
+        "narHash": "sha256-+8xZT+mVEqlqabQc+1buVH/X6FZxvCd0rWMyjPu9i4o=",
+        "owner": "microsoft",
+        "repo": "mimalloc",
+        "rev": "fbd8b99c2b828428947d70fdc046bb55609be93e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "microsoft",
+        "ref": "v2.2.4",
+        "repo": "mimalloc",
         "type": "github"
       }
     },

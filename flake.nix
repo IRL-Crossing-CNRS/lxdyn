@@ -23,6 +23,8 @@
     src-interfaces  = { url = "github:naval-group/interfaces/5a3b79e3cc6c2a5c29f81d0316c0daa3d11f40d5";           flake = false; };
     src-websocketpp = { url = "github:LocutusOfBorg/websocketpp/67405e1ab225f20835e4086f89b54b805dd43bae";        flake = false; };
     src-stb         = { url = "github:nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20";                     flake = false; };
+    # The executables' malloc: see addMimalloc in build.zig.
+    src-mimalloc    = { url = "github:microsoft/mimalloc/v2.2.4";                                                  flake = false; };
 
     # SSC's own submodule, so `git submodule status` inside external/ssc prints this pin.
     src-f2c = {
@@ -206,6 +208,10 @@
           cp -rT ${inputs.src-f2c} external/ssc/ssc/f2c
           chmod -R u+w external/ssc/ssc/f2c
 
+          # Two leaks in SSC that grew xdyn-for-cs at every co-simulation step (~17 kB per
+          # step on a BlueROV): see the patch.
+          patch -d external/ssc -p1 < ${./tools/patches/ssc-leaks.patch}
+
           # -Dgit-sha, because headSha() shells out to git against a .git the sandbox has not
           # got. -Deigen, because the pkg-config probe needs a setup hook this stdenv has not
           # got — eigen is header-only, so it is not a bucket-3 dependency.
@@ -214,6 +220,7 @@
             -Ddeps=${closures.libcxx-deps-x86_64-linux-musl} \
             -Ddeps-host=${hostTools} \
             -Deigen=${pkgs.eigen_5}/include/eigen3 \
+            -Dmimalloc=${inputs.src-mimalloc} \
             -Dgit-sha=${self.rev or self.dirtyRev or "unknown"} \
             --prefix $out
           runHook postBuild
