@@ -46,7 +46,9 @@ YamlSpectrumFromRays::YamlSpectrumFromRays():
     model_yaml(),
     rays(),
     depth(0.0),
-    stretching()
+    stretching(),
+    rays_file(),
+    reload_rays_file(false)
 {}
 
 YamlJonswap::YamlJonswap():

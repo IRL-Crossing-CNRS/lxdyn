@@ -13,6 +13,8 @@
 #include <ssc/kinematics.hpp>
 #include <ssc/macros.hpp>
 #include TR1INC(memory)
+#include <chrono>
+#include <filesystem>
 
 /** \author cady
  *  \date Aug 1, 2014, 3:15:04 PM
@@ -129,7 +131,14 @@ class WaveModel
             ) const = 0;
 
     protected:
-        FlatDiscreteDirectionalWaveSpectrum flat_spectrum;
+        /** \brief Re-reads flat_spectrum.rays_file if it changed since the last read, at most
+         *  every 0.2 s of wall time. An unreadable file (e.g. caught mid-write) keeps the rays
+         *  already loaded. */
+        void reload_rays_if_changed() const;
+        // Mutable: a sea state changing during the run is read from inside the const queries.
+        mutable FlatDiscreteDirectionalWaveSpectrum flat_spectrum;
+        mutable std::chrono::steady_clock::time_point next_rays_check;
+        mutable std::filesystem::file_time_type rays_file_time;
 };
 
 typedef TR1(shared_ptr)<WaveModel> WaveModelPtr;

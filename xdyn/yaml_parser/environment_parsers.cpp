@@ -7,6 +7,7 @@
 
 
 #include "environment_parsers.hpp"
+#include "xdyn/environment_models/DiscreteDirectionalWaveSpectrum.hpp"
 #include "external_data_structures_parsers.hpp"
 #include "parse_output.hpp"
 #include "xdyn/exceptions/InvalidInputException.hpp"
@@ -219,23 +220,20 @@ void operator >> (const YAML::Node& node, YamlSpectrumFromRays& g)
         std::string rays_filename;
         node["rays from file"] >> rays_filename;
         const std::string extension = get_format(rays_filename);
-        if (extension == "csv")
+        if (extension != "csv")
         {
-            const size_t expected_nb_of_columns = 5;
-            const char separator = ',';
-            ssc::csv_file_reader::CSVFileReader csv_file_reader(rays_filename.c_str(), expected_nb_of_columns, separator);
-            std::map<std::string,std::vector<double> > map = csv_file_reader.get_map();
-            std::copy(map["a"].begin(), map["a"].end(), std::back_inserter(g.rays.a));
-            std::copy(map["psi"].begin(), map["psi"].end(), std::back_inserter(g.rays.psi));
-            std::copy(map["omega"].begin(), map["omega"].end(), std::back_inserter(g.rays.omega));
-            std::copy(map["k"].begin(), map["k"].end(), std::back_inserter(g.rays.k));
-            std::copy(map["phase"].begin(), map["phase"].end(), std::back_inserter(g.rays.phase));
+            THROW(__PRETTY_FUNCTION__, InvalidInputException,
+                  "should use a CSV file, with extension CSV");
         }
-        else
+        FlatDiscreteDirectionalWaveSpectrum f;
+        std::string error;
+        if (!read_rays_csv(rays_filename, f, error))
         {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException,
-              "should use a CSV file, with extension CSV");
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "rays from file: " << error);
         }
+        g.rays.a = f.a; g.rays.psi = f.psi; g.rays.omega = f.omega; g.rays.k = f.k; g.rays.phase = f.phase;
+        g.rays_file = rays_filename;
+        if (node["reload rays file"]) node["reload rays file"] >> g.reload_rays_file;
     }
     else
     {

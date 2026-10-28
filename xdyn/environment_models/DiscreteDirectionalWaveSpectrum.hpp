@@ -9,6 +9,7 @@
 #define DISCRETEDIRECTIONALWAVESPECTRUM_HPP_
 
 #include <functional>
+#include <string>
 #include <vector>
 
 /** \author cady
@@ -55,9 +56,21 @@ struct FlatDiscreteDirectionalWaveSpectrum
     std::vector<double> sin_psi; //!< Sinus directions between 0 & 2pi the spatial spreading was discretized at (so we do not compute it each time), for each angular frequency omega, and direction
     std::vector<double> k;       //!< Discretized wave number (for each frequency) (in 1/m), for each angular frequency omega, i.e. same size as omega
     std::vector<double> phase;   //!< Random phases, for each (frequency, direction) couple (but time invariant) in radian, for each angular frequency omega, and direction
+    // Optional fade of each ray while the sea state changes, in simulation time (s). Empty:
+    // every ray at full amplitude. gain(t) = sqrt(u_in (1 - u_out)), u the clamped ramps.
+    std::vector<double> fade_in_start, fade_in_duration, fade_out_start, fade_out_duration;
+    std::string rays_file;       //!< CSV re-read when it changes ("reload rays file: true"), empty otherwise
+    double gain(const size_t i, const double t) const; //!< Fade of ray i at time t, 1 without fades
+    std::vector<double> amplitudes(const double t) const; //!< a times the fade of each ray at time t
     std::function<double(double,double,double)> pdyn_factor;    //!< Factor used when computing the dynamic pressure (no unit)
     std::function<double(double,double,double)> pdyn_factor_sh; //!< Factor used when computing the orbital velocity (no unit)
     std::vector<double> get_periods() const; //< Get the ray periods as a vector, from omega attribute (in s)
 };
+
+/** \brief Reads the rays of a CSV with columns a,psi,omega,k,phase and, optionally,
+ *  fade_in_start,fade_in_duration,fade_out_start,fade_out_duration (any order, header line first).
+ *  \returns false, with the reason in error, if the file cannot be read: f is then unchanged.
+ */
+bool read_rays_csv(const std::string& path, FlatDiscreteDirectionalWaveSpectrum& f, std::string& error);
 
 #endif /* DISCRETEDIRECTIONALWAVESPECTRUM_HPP_ */
