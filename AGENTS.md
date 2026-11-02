@@ -35,7 +35,7 @@ Triples: `x86_64-linux-gnu`, `x86_64-linux-musl`, `aarch64-linux-musl`, `x86_64-
 
 ```sh
 zig build                      # build
-zig build test                 # native unit suite, 916 tests
+zig build test                 # native unit suite, 963 tests
 zig build -Ddebug              # -O0 -g
 zig build gen                  # the code generators alone
 mise run cross                 # both cross suites under qemu and wine
@@ -48,6 +48,8 @@ mise run python:test           # binding tests on 3.10
 mise run python:matrix         # on 3.10, 3.13 and 3.15
 mise run python:lint           # ruff check
 mise run python:wheel          # wheel plus a clean-venv check
+mise run fmu:test              # the FMU through FMPy
+mise run fmu:wine              # its Windows build under wine, against Linux (`nix develop .#cross`)
 ```
 
 ## Traps
