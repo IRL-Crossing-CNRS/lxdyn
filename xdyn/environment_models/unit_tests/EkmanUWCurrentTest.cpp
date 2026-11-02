@@ -7,6 +7,7 @@
 
 #include <Eigen/Dense>
 #include <cstdio>
+#include <fstream>
 #include <vector>
 #include <complex>
 #include <sstream>
@@ -193,4 +194,52 @@ TEST_F(EkmanUWCurrentTest, current_reverses_at_one_layer_thickness)
 
     const double relative_angle = std::arg(W(model, D_s) / W(model, 1e-4));
     ASSERT_NEAR(std::abs(relative_angle), M_PI, 1e-3);
+}
+
+// A change of weather during the run: the "weather file" moves the wind-driven layer from one
+// wind to another between two simulation times, linearly in velocity, and nothing else.
+TEST_F(EkmanUWCurrentTest, weather_file_moves_the_wind_layer_between_two_times)
+{
+    const std::string seabed_file = write_seabed_image();
+    const char* weather = "ekmantest_weather.csv";
+    {
+        std::ofstream f(weather);
+        f << "start_s,duration_s,U10_from,wind_from_deg,U10_to,wind_to_deg\n"
+          << "100,30,4.4,20,9.35,20\n";
+    }
+    const auto model_with = [&](const double U10, const bool with_file)
+    {
+        std::ostringstream ss;
+        ss << "{seabed file: " << seabed_file << ","
+           << " latitude: { value: 47, unit: deg },"
+           << " top layer thickness: { value: 10, unit: m },"
+           << " layer thickness follows wind: true,"
+           << " bottom layer thickness: { value: 1, unit: m },"
+           << " current velocity: { value: 0.1, unit: m/s },"
+           << " current orientation: { value: 30, unit: deg },"
+           << " U10: { value: " << U10 << ", unit: m/s },"
+           << " wind orientation: { value: 20, unit: deg }"
+           << (with_file ? std::string(", weather file: ") + weather : std::string()) << "}";
+        return EkmanUWCurrentModel(EkmanUWCurrentModel::parse(ss.str()));
+    };
+    const EkmanUWCurrentModel live = model_with(1, true);  // the YAML's own wind is replaced by the file's
+    const EkmanUWCurrentModel before = model_with(4.4, false);
+    const EkmanUWCurrentModel after = model_with(9.35, false);
+    for (const double z : {0.5, 5.0, 30.0})
+    {
+        const Eigen::Vector3d p(0, 0, z);
+        ASSERT_NEAR((live.get_UWCurrent(p, 50, 0) - before.get_UWCurrent(p, 50, 0)).norm(), 0, 1e-12);
+        ASSERT_NEAR((live.get_UWCurrent(p, 200, 0) - after.get_UWCurrent(p, 200, 0)).norm(), 0, 1e-12);
+        const Eigen::Vector3d half = 0.5*(before.get_UWCurrent(p, 115, 0) + after.get_UWCurrent(p, 115, 0));
+        ASSERT_NEAR((live.get_UWCurrent(p, 115, 0) - half).norm(), 0, 1e-12);
+    }
+    std::remove(weather);
+}
+
+// With "layer thickness follows wind", the layer depth is Ekman's empirical 7.6 U10 / sqrt(sin|lat|):
+// the surface current is then about 1 % of the wind instead of growing as U10^2.
+TEST_F(EkmanUWCurrentTest, layer_depth_follows_the_wind)
+{
+    ASSERT_NEAR(EkmanUWCurrentModel::layer_depth_of(9.35, 50.33*M_PI/180), 81.0, 0.1);
+    ASSERT_NEAR(EkmanUWCurrentModel::layer_depth_of(4.4, 0.0), 4.4*7.6/std::sqrt(std::sin(10*M_PI/180)), 1e-9);
 }
