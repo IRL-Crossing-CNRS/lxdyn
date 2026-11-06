@@ -138,6 +138,15 @@ FlatDiscreteDirectionalWaveSpectrum SurfaceElevationBuilder<SurfaceElevationFrom
         f.cos_psi.push_back(cos(psi));
         f.sin_psi.push_back(sin(psi));
     }
+    if (!spectrum.rays_file.empty())
+    {
+        std::string error;
+        if (!read_rays_csv(spectrum.rays_file, f, error))
+        {
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "rays from file: " << error);
+        }
+        if (spectrum.reload_rays_file) f.rays_file = spectrum.rays_file;
+    }
     const Stretching stretching(spectrum.stretching);
     if (spectrum.depth==0.0)
     {

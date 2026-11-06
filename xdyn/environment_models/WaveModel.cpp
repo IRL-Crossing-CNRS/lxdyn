@@ -70,9 +70,30 @@ WaveModel::WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum, const int 
     check_sizes();
 }
 
-WaveModel::WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum) : flat_spectrum(spectrum)
+WaveModel::WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum) : flat_spectrum(spectrum), next_rays_check(), rays_file_time()
 {
     check_sizes();
+    if (!flat_spectrum.rays_file.empty())
+    {
+        std::error_code ec;
+        rays_file_time = std::filesystem::last_write_time(flat_spectrum.rays_file, ec);
+    }
+}
+
+void WaveModel::reload_rays_if_changed() const
+{
+    if (flat_spectrum.rays_file.empty()) return;
+    const auto now = std::chrono::steady_clock::now();
+    if (now < next_rays_check) return;
+    next_rays_check = now + std::chrono::milliseconds(200);
+    std::error_code ec;
+    const auto time = std::filesystem::last_write_time(flat_spectrum.rays_file, ec);
+    if (ec || time == rays_file_time) return;
+    FlatDiscreteDirectionalWaveSpectrum f = flat_spectrum; // keeps the depth factors
+    std::string error;
+    if (!read_rays_csv(flat_spectrum.rays_file, f, error)) return;
+    flat_spectrum = f;
+    rays_file_time = time;
 }
 
 void WaveModel::check_sizes() const
@@ -133,6 +154,7 @@ std::vector<double> WaveModel::get_elevation(
         THROW(__PRETTY_FUNCTION__, InternalErrorException,
             "Error when calculating surface elevation: the x and y vectors don't have the same size (size of x: " << x.size() << ", size of y: " << y.size() << ")");
     }
+    reload_rays_if_changed();
     return elevation(x, y, t);
 }
 
@@ -150,6 +172,7 @@ ssc::kinematics::PointMatrix WaveModel::get_orbital_velocity(
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "Error when calculating orbital velocity: the x, y, z and eta vectors don't have the same size (size of x: "
             << x.size() << ", size of y: " << y.size() << ", size of z: " << z.size() << ", size of eta: " << eta.size() << ")");
     }
+    reload_rays_if_changed();
     return orbital_velocity(g, x, y, z, t, eta);
 }
 
@@ -169,5 +192,6 @@ std::vector<double> WaveModel::get_dynamic_pressure(
               "Error when calculating dynamic pressure: the x, y, z and eta vectors don't have the same size (size of x: " << x.size()
                 << ", size of y: " << y.size() << ", size of z: " << z.size() << ", size of eta: " << eta.size() << ")");
     }
+    reload_rays_if_changed();
     return dynamic_pressure(rho, g, x, y, z, eta, t);
 }

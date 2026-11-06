@@ -346,12 +346,12 @@ void Body::calculate_state_derivatives(const ssc::kinematics::Wrench& sum_of_for
     const Eigen::Map<const Eigen::Vector3d> uvw(_U(x,idx));
     const Eigen::Map<const Eigen::Vector3d> pqr(_P(x,idx));
     const Eigen::Vector3d XpYpZp(R*uvw);
-    // The water the body moves through is itself moving: the current advects the hull. Both terms
-    // are already in NED, so the current needs no rotation here.
-    const Eigen::Vector3d current_in_ned = env.get_UWCurrent(Eigen::Vector3d(*_X(x,idx), *_Y(x,idx), *_Z(x,idx)), t);
-    *_X(dx_dt,idx) = XpYpZp(0) + current_in_ned(0);
-    *_Y(dx_dt,idx) = XpYpZp(1) + current_in_ned(1);
-    *_Z(dx_dt,idx) = XpYpZp(2) + current_in_ned(2);
+    // (u,v,w) is the velocity relative to NED (doc_user/reperes_et_conventions.md), so it alone moves
+    // the body. The current acts through the force models, which use the velocity relative to the
+    // water; adding it here as well carried a drifting body at twice the current.
+    *_X(dx_dt,idx) = XpYpZp(0);
+    *_Y(dx_dt,idx) = XpYpZp(1);
+    *_Z(dx_dt,idx) = XpYpZp(2);
 
     // dqr/dt, dqi/dt, dqj/dt, dqk/dt
     const Eigen::Quaternion<double> q1(*_QR(x,idx),

@@ -38,6 +38,8 @@ double Airy::evaluate_rao(
         const std::vector<double>& rao_phase_for_each_frequency_and_incidence      //!< "Flattened" matrix containing the phase of the RAO for each angular frequency omega and each wave incidence beta
         ) const
 {
+    reload_rays_if_changed();
+    const std::vector<double> amplitude = flat_spectrum.amplitudes(t);
     double F = 0;
     const size_t nb_of_omegas_x_nb_of_directions = rao_module_for_each_frequency_and_incidence.size();
     if (nb_of_omegas_x_nb_of_directions != flat_spectrum.k.size())
@@ -46,7 +48,7 @@ double Airy::evaluate_rao(
     }
     for (size_t i = 0 ; i < nb_of_omegas_x_nb_of_directions ; ++i) // For each (omega,beta) pair
     {
-        const double rao_amplitude = rao_module_for_each_frequency_and_incidence[i] * flat_spectrum.a[i];
+        const double rao_amplitude = rao_module_for_each_frequency_and_incidence[i] * amplitude[i];
         const double omega_t = flat_spectrum.omega[i] * t;
         const double k_xCosPsi_ySinPsi = flat_spectrum.k[i] * (x * flat_spectrum.cos_psi[i] + y * flat_spectrum.sin_psi[i]);
         const double theta = flat_spectrum.phase[i];
@@ -63,11 +65,12 @@ std::vector<double> Airy::elevation(
 {
     std::vector<double> zeta(x.size());
     const size_t n = flat_spectrum.psi.size();
+    const std::vector<double> amplitude = flat_spectrum.amplitudes(t);
 
     for (size_t j = 0; j < zeta.size(); ++j) {
         for (size_t i = 0 ; i < n ; ++i)
         {
-            const double a = flat_spectrum.a[i];
+            const double a = amplitude[i];
             const double omega_t = flat_spectrum.omega[i] * t;
             const double k_xCosPsi_ySinPsi = flat_spectrum.k[i] * (x.at(j) * flat_spectrum.cos_psi[i] + y.at(j) * flat_spectrum.sin_psi[i]);
             const double theta = flat_spectrum.phase[i];
@@ -89,6 +92,7 @@ std::vector<double> Airy::dynamic_pressure(
     ) const
 {
     std::vector<double> p(x.size(), 0);
+    const std::vector<double> amplitude = flat_spectrum.amplitudes(t);
 
     for (size_t j = 0; j < p.size(); ++j)
     {
@@ -110,7 +114,7 @@ std::vector<double> Airy::dynamic_pressure(
             const size_t n = flat_spectrum.psi.size();
             for (size_t i = 0; i < n; ++i)
             {
-                const double a = flat_spectrum.a[i];
+                const double a = amplitude[i];
                 const double k = flat_spectrum.k[i];
                 const double omega_t = flat_spectrum.omega[i] * t;
                 const double pdyn_fact = flat_spectrum.pdyn_factor(k, z[j], eta[j]);
@@ -134,6 +138,7 @@ ssc::kinematics::PointMatrix Airy::orbital_velocity(
         ) const
 {
     ssc::kinematics::PointMatrix M("NED", x.size());
+    const std::vector<double> amplitude = flat_spectrum.amplitudes(t);
     for (size_t point_index = 0; point_index < x.size(); ++point_index) {
         if (z.at(point_index) < eta.at(point_index))
         {
@@ -155,7 +160,7 @@ ssc::kinematics::PointMatrix Airy::orbital_velocity(
                 const double theta = -omega * t + k_xCosPsi_ySinPsi + flat_spectrum.phase[i];
                 const double cos_theta = cos(theta);
                 const double sin_theta = sin(theta);
-                const double a_k_omega = flat_spectrum.a[i] * k / omega;
+                const double a_k_omega = amplitude[i] * k / omega;
                 const double a_k_omega_pdyn_factor_sin_theta = a_k_omega * pdyn_factor * sin_theta;
                 u += a_k_omega_pdyn_factor_sin_theta * flat_spectrum.cos_psi[i];
                 v += a_k_omega_pdyn_factor_sin_theta * flat_spectrum.sin_psi[i];
