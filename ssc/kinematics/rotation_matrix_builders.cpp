@@ -4,9 +4,9 @@
 
 using namespace ssc::kinematics;
 
-typedef Eigen::Matrix<double, 3, 1> Vector;
+using Vector = Eigen::Matrix<double, 3, 1>;
 
-#define SQUARE(x) (x*x)
+#define SQUARE(x) ((x)*(x))
 
 RotationMatrix ssc::kinematics::rot(const double lambda1, const double lambda2, const double lambda3, const double beta)
 {

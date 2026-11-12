@@ -23,14 +23,14 @@ TEST_F(H5InterfaceTest, writeFileDescription)
     ASSERT_EQ(0,remove(fileName.c_str()));
 }
 
-#define MAX_NAME_LENGTH 32
+constexpr int MAX_NAME_LENGTH = 32;
 
-typedef struct {
+using PersonalInformation = struct {
     int age;
     char sex;
     char name[MAX_NAME_LENGTH];
     float height;
-} PersonalInformation;
+};
 
 template <> H5::CompType H5_Interface<PersonalInformation>::createId()
 {
@@ -442,6 +442,7 @@ TEST_F(H5InterfaceTest, should_be_able_to_write_a_vector_vector_vector_of_double
     std::vector<std::vector<double> >aa;
     aa.push_back(std::vector<double>{1.0, 2.0, 3.0});
     aa.push_back(std::vector<double>{4.0, 5.0, 6.0});
+    aaa.reserve(n0);
     for (size_t i=0;i<n0;++i) aaa.push_back(aa);
     H5_Tools::write(filename, datasetname, aaa);
     H5_Tools::read(filename, datasetname, res);

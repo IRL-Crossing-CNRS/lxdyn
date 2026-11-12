@@ -15,11 +15,10 @@
 #include <ssc/random_data_generator.hpp>
 #include <ssc/macros.hpp>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-int main(int , char** )
+int main(int , char** ) // NOLINT(bugprone-exception-escape): a developer tool, where std::terminate prints the exception
 {
     const double Hs = 3;
     const double Tp = 5;

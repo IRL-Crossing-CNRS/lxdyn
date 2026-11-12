@@ -40,7 +40,7 @@ KtKqForceModel::Yaml::Yaml(const AbstractWageningen::Yaml& y) :
 KtKqForceModel::Yaml KtKqForceModel::parse(const std::string& yaml)
 {
     YAML::Node node = YAML::Load(yaml);
-    Yaml ret = AbstractWageningen::parse(yaml);;
+    Yaml ret(AbstractWageningen::parse(yaml));
     node["J"]  >> ret.J;
     node["Kt"] >> ret.Kt;
     node["Kq"] >> ret.Kq;
@@ -52,6 +52,8 @@ KtKqForceModel::KtKqForceModel(const Yaml& input, const std::string& body_name_,
             AbstractWageningen(input, body_name_, env), pimpl(new Impl(input.J, input.Kt, input.Kq))
 {
 }
+
+KtKqForceModel::~KtKqForceModel() = default;
 
 double KtKqForceModel::get_Kt(const std::map<std::string,double>&, const double J) const
 {

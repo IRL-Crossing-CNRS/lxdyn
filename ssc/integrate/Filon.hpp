@@ -18,12 +18,12 @@ namespace ssc
         {
             public:
                 Filon();
-                Filon(const Function& f_);
+                explicit Filon(const Function& f_);
                 Filon(const Function& f_, const double tau);
                 double compute_for(const double tau, const double a, const double b, const double eps);
 
             private:
-                double integrate_impl(const Function& f, double a, double b, double eps=1e-6);
+                double integrate_impl(const Function& f, double a, double b, double eps=1e-6) override;
                 double tau;
         };
     }

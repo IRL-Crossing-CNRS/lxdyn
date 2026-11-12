@@ -8,29 +8,29 @@
 #include <utility>
 #include <map>
 
-typedef std::map<std::string, double> DictMap1;
-typedef std::map<std::string, std::map<std::string, double> > DictMap2;
+using DictMap1 = std::map<std::string, double>;
+using DictMap2 = std::map<std::string, std::map<std::string, double> >;
 
 class DictObserver : public Observer
 {
     public:
         DictObserver();
-        DictObserver(const std::vector<std::string>& d);
-        ~DictObserver();
+        explicit DictObserver(const std::vector<std::string>& d);
+        ~DictObserver() override;
 
     protected:
-        virtual void flush_after_initialization(){}
-        virtual void flush_value_during_write(){}
-        virtual void flush_after_write();
+        void flush_after_initialization() override{}
+        void flush_value_during_write() override{}
+        void flush_after_write() override;
 
         using Observer::get_serializer;
         using Observer::get_initializer;
 
-        std::function<void()> get_serializer(const double val, const DataAddressing& address);
-        std::function<void()> get_initializer(const double val, const DataAddressing& address);
+        std::function<void()> get_serializer(const double val, const DataAddressing& address) override;
+        std::function<void()> get_initializer(const double val, const DataAddressing& address) override;
 
-        std::function<void()> get_serializer(const SurfaceElevationGrid& val, const DataAddressing& address);
-        std::function<void()> get_initializer(const SurfaceElevationGrid& val, const DataAddressing& address);
+        std::function<void()> get_serializer(const SurfaceElevationGrid& val, const DataAddressing& address) override;
+        std::function<void()> get_initializer(const SurfaceElevationGrid& val, const DataAddressing& address) override;
 
         std::stringstream ss;
     private:

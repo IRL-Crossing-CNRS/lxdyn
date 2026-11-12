@@ -47,9 +47,9 @@ class FacetIterator
 class MeshIntersector
 {
     public:
-        MeshIntersector(const VectorOfVectorOfPoints& mesh, const bool check_orientation=true);
-        MeshIntersector(
-                const MeshPtr mesh_                  //!< the mesh to intersect
+        explicit MeshIntersector(const VectorOfVectorOfPoints& mesh, const bool check_orientation=true);
+        explicit MeshIntersector(
+                const MeshPtr& mesh_                  //!< the mesh to intersect
                 );
 
         /**
@@ -267,7 +267,7 @@ class MeshIntersector
         bool need_to_update_closing_facet;
 };
 
-typedef std::shared_ptr<MeshIntersector> MeshIntersectorPtr;
-typedef std::shared_ptr<const MeshIntersector> const_MeshIntersectorPtr;
+using MeshIntersectorPtr = std::shared_ptr<MeshIntersector>;
+using const_MeshIntersectorPtr = std::shared_ptr<const MeshIntersector>;
 
 #endif

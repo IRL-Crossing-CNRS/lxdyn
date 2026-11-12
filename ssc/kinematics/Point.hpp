@@ -29,7 +29,7 @@ namespace ssc
         {
             public:
                 Point();
-                Point(const std::string& frame);
+                explicit Point(const std::string& frame);
                 Point(const Point& P);
                 Point(const std::string& frame, const Eigen::Vector3d& v);
                 Point(const std::string& frame, const double x, const double y, const double z);
@@ -46,7 +46,7 @@ namespace ssc
                 inline double z() const {return v[2];}
                 std::string get_frame() const;
 
-                void swap(Point& other);
+                void swap(Point& other) noexcept;
 
             private:
                 std::string frame;
@@ -54,7 +54,7 @@ namespace ssc
 
         std::ostream& operator<<(std::ostream& os, const Point& P);
 
-        void swap(Point& a, Point& b); // provide non-member for ADL
+        void swap(Point& a, Point& b) noexcept; // provide non-member for ADL
     }
 }
 

@@ -33,7 +33,7 @@
 #include <map>
 
 class BodyBuilder;
-typedef std::map<std::string, VectorOfVectorOfPoints> MeshMap;
+using MeshMap = std::map<std::string, VectorOfVectorOfPoints>;
 
 /*  \brief Builds a Sim object which can be used with quicksolve
  *  \details This class is used to configure the Sim object for simulation.
@@ -48,7 +48,7 @@ typedef std::map<std::string, VectorOfVectorOfPoints> MeshMap;
 class SimulatorBuilder
 {
     public:
-        SimulatorBuilder(const YamlSimulatorInput& input, const double t0 = 0.0, const ssc::data_source::DataSource& command_listener = ssc::data_source::DataSource());
+        explicit SimulatorBuilder(const YamlSimulatorInput& input, const double t0 = 0.0, const ssc::data_source::DataSource& command_listener = ssc::data_source::DataSource());
 
         /**  \brief Builds a Sim object using the supplied mesh map (one mesh per body)
           *  \details This function is mainly used in the integration tests.
@@ -73,7 +73,7 @@ class SimulatorBuilder
           *  \returns *this (so we can chain calls to can_parse)
           *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
           */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<SurfaceElevationInterface,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<SurfaceElevationInterface,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             surface_elevation_parsers.push_back(SurfaceElevationBuilderPtr(new SurfaceElevationBuilder<T>(wave_parsers, directional_spreading_parsers,spectrum_parsers)));
@@ -89,7 +89,7 @@ class SimulatorBuilder
           *  \returns *this (so we can chain calls to can_parse)
           *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
           */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveModel,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveModel,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             wave_parsers->push_back(WaveModelBuilderPtr(new WaveModelBuilder<T>(directional_spreading_parsers,spectrum_parsers)));
@@ -105,7 +105,7 @@ class SimulatorBuilder
           *  \returns *this (so we can chain calls to can_parse)
           *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
           */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveDirectionalSpreading,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveDirectionalSpreading,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             directional_spreading_parsers->push_back(DirectionalSpreadingBuilderPtr(new DirectionalSpreadingBuilder<T>()));
@@ -121,7 +121,7 @@ class SimulatorBuilder
           *  \returns *this (so we can chain calls to can_parse)
           *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
           */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<ForceModel,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<ForceModel,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             force_parsers.push_back(ForceModel::build_parser<T>());
@@ -137,7 +137,7 @@ class SimulatorBuilder
           *  \returns *this (so we can chain calls to can_parse)
           *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
           */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveSpectralDensity,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WaveSpectralDensity,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             spectrum_parsers->push_back(SpectrumBuilderPtr(new SpectrumBuilder<T>()));
@@ -153,7 +153,7 @@ class SimulatorBuilder
          *  \returns *this (so we can chain calls to can_parse)
          *  \snippet simulator/unit_tests/SimulatorBuilderTest.cpp SimulatorBuilderTest can_parse_example
          */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WindModel,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<WindModel,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             wind_model_parsers.push_back(WindModel::build_parser<T>());
@@ -164,7 +164,7 @@ class SimulatorBuilder
          *  \details Same contract as the WindModel overload above.
          *  \returns *this (so we can chain calls to can_parse)
          */
-        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<UWCurrentModel,T> >::type* dummy = 0)
+        template <typename T> SimulatorBuilder& can_parse(typename boost::enable_if<boost::is_base_of<UWCurrentModel,T> >::type* dummy = nullptr)
         {
             (void)dummy; // Ignore "unused variable" warning: we just need "dummy" for boost::enable_if
             UWCurrent_model_parsers.push_back(UWCurrentModel::build_parser<T>());

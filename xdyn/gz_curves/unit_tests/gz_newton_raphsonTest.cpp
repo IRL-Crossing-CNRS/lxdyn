@@ -9,10 +9,10 @@
 #include "gz_newton_raphsonTest.hpp"
 #include "gz_newton_raphson.hpp"
 
-#define SQ(X) (X*X)
-#define CB(X) (X*X*X)
+#define SQ(X) ((X)*(X))
+#define CB(X) ((X)*(X)*(X))
 
-#define EPS 1E-15
+constexpr double EPS = 1E-15;
 
 gz_newton_raphsonTest::gz_newton_raphsonTest() : a(ssc::random_data_generator::DataGenerator(54555))
 {

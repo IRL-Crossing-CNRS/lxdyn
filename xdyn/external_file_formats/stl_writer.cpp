@@ -48,8 +48,8 @@ std::string write_stl(const VectorOfPoints& mesh)
     return write_stl(VectorOfVectorOfPoints(1,mesh));
 }
 
-Eigen::Vector3d unit_normal__(const Matrix3x& points);
-Eigen::Vector3d unit_normal__(const Matrix3x& points)
+Eigen::Vector3d facet_unit_normal(const Matrix3x& points);
+Eigen::Vector3d facet_unit_normal(const Matrix3x& points)
 {
     //const double sign = oriented_clockwise ? -1 : 1;
     if (points.cols() < 3)
@@ -82,7 +82,7 @@ void write_binary_stl(const VectorOfVectorOfPoints& stl, std::ostream& os)
     const unsigned int nFaces = (unsigned int)stl.size();
     os.write(reinterpret_cast<const char*>(&nFaces), sizeof(nFaces));
 
-    typedef unsigned short uint16;
+    using uint16 = unsigned short;
     const uint16 spacer = 0;
     // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
     for (size_t i=0; i<nFaces; ++i)
@@ -92,7 +92,7 @@ void write_binary_stl(const VectorOfVectorOfPoints& stl, std::ostream& os)
         {
             for (size_t k = 0 ; k < 3 ; ++k) M((int)k,(int)j) = stl[i][j]((int)k);
         }
-        const Eigen::Vector3d normal = unit_normal__(M);
+        const Eigen::Vector3d normal = facet_unit_normal(M);
         float x = (float)normal(0);
         float y = (float)normal(1);
         float z = (float)normal(2);

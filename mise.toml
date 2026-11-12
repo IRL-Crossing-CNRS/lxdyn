@@ -1,3 +1,7 @@
+# Every task runs on the devShell's pinned tools, never the host's: `nix develop`, or direnv.
+[env]
+LXDYN_DEVSHELL = { required = "enter the lxdyn devShell first: `nix develop`, or `direnv allow` once" }
+
 [tasks.bootstrap]
 description = "First-time setup for a fresh clone: the host tools and a closure"
 run = '''
@@ -55,10 +59,20 @@ description = "gdb a debug-built exe: mise run gdb -- run_all_tests --gtest_filt
 depends = ["zig:debug"]
 run = "sh tools/gdb.sh"
 
+# Runs tidy too, so clangd's compile_commands.json follows every .proto edit and cache clean.
 [tasks."zig:build"]
-description = "Build xdyn and the test runner -> build/<target>/bin"
+description = "Build xdyn and the test runner -> build/<target>/bin, and compile_commands.json"
+depends = ["python:setup"]
 run = """
-zig build --prefix "$(sh tools/build-dir.sh)"
+zig build install tidy --prefix "$(sh tools/build-dir.sh)"
+"""
+
+[tasks.tidy]
+description = "clang-tidy over the first-party C++: mise run tidy -- -fix, or -- -checks=-*,<check>"
+depends = ["python:setup"]
+run = """
+zig build tidy
+sh tools/tidy/run.sh
 """
 
 [tasks."zig:debug"]
@@ -119,7 +133,7 @@ description = "Run the gRPC and JSON protocol integration tests"
 depends = ["zig:build", "integration:setup"]
 run = """
 PY=$PWD/build/venv/grpc/bin/python
-(cd xdyn_grpc && "$PY" -m pytest -q xdyngrpc/controllers/tests.py xdyngrpc/forces/test_marshalling.py)
+(cd xdyn_grpc && "$PY" -m pytest -q tests)
 make -C integration_tests/grpc_tests
 make -C integration_tests/json_tests
 """
@@ -175,16 +189,9 @@ git diff --quiet HEAD || { echo "refusing to publish: the working tree is dirty"
 echo "pushed $REGISTRY:$VERSION and $REGISTRY:latest"
 '''
 
-[tasks."deploy:server-image"]
-description = "Build the xdyngrpc-python server image used by the deployment smoke test"
-run = '''
-CONTAINER=${CONTAINER:-$(command -v podman > /dev/null 2>&1 && echo podman || echo docker)}
-"$CONTAINER" build -f xdyn_grpc/Containerfile.python -t localhost/xdyngrpc-python xdyn_grpc
-'''
-
 [tasks."deploy:test"]
 description = "Deployment smoke test: the image starts, simulates, and serves gRPC"
-depends = ["zig:build", "deploy:image", "deploy:server-image", "integration:setup"]
+depends = ["deploy:image", "integration:setup"]
 run = "sh integration_tests/deploy/run.sh"
 
 [tasks."python:setup"]
@@ -316,5 +323,5 @@ description = "Remove build/ — artifacts, venvs, task scratch and generated do
 run = "rm -rf build"
 
 [tasks.lint]
-description = "Check for tabs in source files"
+description = "Check for tabs in the C and C++, and zig fmt the build files"
 run = "sh tools/lint.sh"

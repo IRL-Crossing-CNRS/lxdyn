@@ -34,14 +34,14 @@ namespace ssc
                  *            on purpose
                  */
                 template<typename T>
-                void send_binary(const std::vector<T> vector)
+                void send_binary(const std::vector<T>& vector)
                 {
                     send_vector(&vector[0], sizeof(T)*vector.size());
                 }
 
             private:
                 struct Impl;
-                std::shared_ptr<Impl> pimpl;
+                std::unique_ptr<Impl> pimpl;
                 void send_vector(const int id, void const * payload, const size_t nb_of_bytes);
                 void send_vector(void const * payload, const size_t nb_of_bytes);
                 template<typename T>

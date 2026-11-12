@@ -52,8 +52,8 @@ class GrpcControllerInterface
 
     protected:
         struct Impl;
-        std::shared_ptr<Impl> pimpl;
-        GrpcControllerInterface(const std::shared_ptr<Impl>& pimpl, const GrpcSetParametersResponse& set_parameters_response);
+        std::unique_ptr<Impl> pimpl;
+        GrpcControllerInterface(std::unique_ptr<Impl> pimpl, const GrpcSetParametersResponse& set_parameters_response);
 
     private:
         GrpcControllerInterface() = delete;
@@ -64,8 +64,8 @@ class GrpcControllerInterface
 class Euler321GrpcController : public GrpcControllerInterface
 {
     public:
-        Euler321GrpcController(const std::shared_ptr<Impl>& pimpl, const GrpcSetParametersResponse& set_parameters_response);
-        GrpcControllerResponse get_commands(const double t, const std::vector<double>& states, const std::vector<double>& dstates_dt, const std::vector<double>& setpoints);
+        Euler321GrpcController(std::unique_ptr<Impl> pimpl, const GrpcSetParametersResponse& set_parameters_response);
+        GrpcControllerResponse get_commands(const double t, const std::vector<double>& states, const std::vector<double>& dstates_dt, const std::vector<double>& setpoints) override;
     private:
         Euler321GrpcController() = delete;
 
@@ -74,8 +74,8 @@ class Euler321GrpcController : public GrpcControllerInterface
 class QuaternionGrpcController : public GrpcControllerInterface
 {
     public:
-        QuaternionGrpcController(const std::shared_ptr<Impl>& pimpl, const GrpcSetParametersResponse& set_parameters_response);
-        GrpcControllerResponse get_commands(const double t, const std::vector<double>& states, const std::vector<double>& dstates_dt, const std::vector<double>& setpoints);
+        QuaternionGrpcController(std::unique_ptr<Impl> pimpl, const GrpcSetParametersResponse& set_parameters_response);
+        GrpcControllerResponse get_commands(const double t, const std::vector<double>& states, const std::vector<double>& dstates_dt, const std::vector<double>& setpoints) override;
     private:
         QuaternionGrpcController() = delete;
 };

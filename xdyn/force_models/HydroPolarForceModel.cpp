@@ -3,6 +3,7 @@
 #include "xdyn/yaml_parser/yaml_compat.h"
 #include <iostream>
 #include "xdyn/yaml_parser/parse_unit_value.hpp"
+#include <memory>
 #include <ssc/kinematics.hpp>
 #include <algorithm>
 #include <cmath>
@@ -26,7 +27,7 @@ std::string HydroPolarForceModel::model_name()
 }
 
 HydroPolarForceModel::HydroPolarForceModel(const Input& input, const std::string& body_name_, const EnvironmentAndFrames& env):
-        ForceModel(input.name, input.angle_command ? std::vector<std::string>({input.angle_command.get()}) : std::vector<std::string>(), input.internal_frame, body_name_, env),
+        ForceModel(input.name, input.angle_command ? std::vector<std::string>({input.angle_command.value()}) : std::vector<std::string>(), input.internal_frame, body_name_, env),
         Cl(),
         Cd(),
         Cm(),
@@ -41,18 +42,18 @@ HydroPolarForceModel::HydroPolarForceModel(const Input& input, const std::string
 {
     if (input.lift_coefficient.size()==0)
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "An empty vector was provided for the angle of attack, which must be provided from either -180° or 0deg (symmetry) to 180deg.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "An empty vector was provided for the angle of attack, which must be provided from either -180° or 0deg (symmetry) to 180deg.");
     }
     const double min_alpha = *std::min_element(input.angle_of_attack.begin(),input.angle_of_attack.end());
     const double max_alpha = *std::max_element(input.angle_of_attack.begin(),input.angle_of_attack.end());
     const double eps = 0.1*M_PI/180;
     if (input.lift_coefficient.size()!=input.angle_of_attack.size() || input.drag_coefficient.size()!=input.angle_of_attack.size())
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack, lift coefficient and drag coefficient must all have the same size.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack, lift coefficient and drag coefficient must all have the same size.");
     }
     if(min_alpha > eps || max_alpha < M_PI-eps)
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack must be provided from either -180° or 0deg (symmetry) to 180deg.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack must be provided from either -180° or 0deg (symmetry) to 180deg.");
     }
     if (max_alpha > M_PI+eps)
     {
@@ -76,19 +77,19 @@ HydroPolarForceModel::HydroPolarForceModel(const Input& input, const std::string
         std::cerr << "WARNING: In hydrodynamic polar force model '" << name << "', you provided a minimum angle of attack lower than -180deg. All values under -180deg will be ignored." << std::endl;
         symmetry = false;
     }
-    Cl.reset(new ssc::interpolation::SplineVariableStep(input.angle_of_attack, input.lift_coefficient));
-    Cd.reset(new ssc::interpolation::SplineVariableStep(input.angle_of_attack, input.drag_coefficient));
-    if (input.moment_coefficient.is_initialized())
+    Cl = std::make_unique<ssc::interpolation::SplineVariableStep>(input.angle_of_attack, input.lift_coefficient);
+    Cd = std::make_unique<ssc::interpolation::SplineVariableStep>(input.angle_of_attack, input.drag_coefficient);
+    if (input.moment_coefficient.has_value())
     {
-        if (input.moment_coefficient.get().size()!=input.angle_of_attack.size())
+        if (input.moment_coefficient.value().size()!=input.angle_of_attack.size())
         {
-            THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack and moment coefficient must have the same size.")
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "Angle of attack and moment coefficient must have the same size.");
         }
-        Cm.reset(new ssc::interpolation::SplineVariableStep(input.angle_of_attack, input.moment_coefficient.get()));
+        Cm = std::make_unique<ssc::interpolation::SplineVariableStep>(input.angle_of_attack, input.moment_coefficient.value());
     }
     if (use_waves_velocity && env.w.use_count()==0)
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "In order to take into account the orbital velocity of waves, a wave model must be defined in the 'environment models' section.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "In order to take into account the orbital velocity of waves, a wave model must be defined in the 'environment models' section.");
     }
 }
 
@@ -145,7 +146,7 @@ Wrench HydroPolarForceModel::get_force(const BodyStates& states, const double t,
     double alpha = beta; // Angle of attack
     if (angle_command)
     {
-        alpha += commands.at(angle_command.get());
+        alpha += commands.at(angle_command.value());
     }
     alpha = std::remainder(alpha, 2*M_PI); // Putting alpha in [-pi,pi]
     *angle_of_attack = alpha;
@@ -165,7 +166,7 @@ Wrench HydroPolarForceModel::get_force(const BodyStates& states, const double t,
     ret.Y() =  drag*std::sin(beta) + lift_sign*lift*std::cos(beta);
     if (Cm)
     {
-        const double normalization_cubic_length = chord_length.is_initialized() ? reference_area*chord_length.get() : std::pow(reference_area, 1.5);
+        const double normalization_cubic_length = chord_length.has_value() ? reference_area*chord_length.value() : std::pow(reference_area, 1.5);
         ret.N() = lift_sign*0.5*Cm->f(alpha_prime)*env.rho*U*U*normalization_cubic_length;
     }
     return ret;

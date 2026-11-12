@@ -22,16 +22,21 @@
 
 using namespace ssc::data_source;
 
-#define NB_OF_TRIALS 100
+constexpr int NB_OF_TRIALS = 100;
 
-static ssc::random_data_generator::DataGenerator a_(21);
 static DataSource* ds_;
+
+static std::string random_module_name()
+{
+    static ssc::random_data_generator::DataGenerator a_(21);
+    return a_.random<std::string>();
+}
 
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
 using ::testing::InSequence;
-MockableDataSourceModule::MockableDataSourceModule() : DataSourceModule(ds_, a_.random<std::string>())
+MockableDataSourceModule::MockableDataSourceModule() : DataSourceModule(ds_, random_module_name())
 {
 
 }
@@ -65,7 +70,7 @@ MODULE(OneInputTwoOutputs,const double x = ds->get<double>("x");\
 TEST_F(DataSourceTest, example)
 {
 //! [DataSourceTest example]
-    std::shared_ptr<DataSource> ds(new DataSource);
+    std::shared_ptr<DataSource> ds = std::make_shared<DataSource>();
     NiceMock<MockDataSourceModule>* mock = new NiceMock<MockDataSourceModule>();
     ON_CALL(*mock, clone()).WillByDefault(Return(mock));
     EXPECT_CALL(*mock, initialize()).Times(1);
@@ -666,7 +671,7 @@ TEST_F(DataSourceTest, when_forcing_a_signal_dependencies_should_not_be_updated)
     DataSource ds;
     ds.add<M4>();
     ds.add<M5>();
-    std::shared_ptr<size_t> nb_of_updates(new size_t(0));
+    std::shared_ptr<size_t> nb_of_updates = std::make_shared<size_t>(0);
     ds.set("nb of updates", nb_of_updates.get());
     ASSERT_EQ(0, *ds.get<size_t*>("nb of updates"));
     const double x = a.random<double>();

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <memory>
 #include <thread>
 // For handling Ctrl+C
 #include <unistd.h>
@@ -20,7 +21,7 @@ static volatile sig_atomic_t stop;
 
 #define ADDRESS "127.0.0.1"
 #define WEBSOCKET_ADDRESS "ws://" ADDRESS
-#define WEBSOCKET_PORT    1234
+constexpr int WEBSOCKET_PORT = 1234;
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -30,7 +31,7 @@ static volatile sig_atomic_t stop;
 std::string current_date_time();
 std::string current_date_time()
 {
-    time_t     now = time(0);
+    time_t     now = time(nullptr);
     struct tm  tstruct;
     char       buf[80];
     tstruct = *localtime(&now);
@@ -51,7 +52,7 @@ class JSONWebSocketServer
         void start(const std::string& address, const short unsigned int port, const bool debug)
         {
             std::cout << "Starting websocket server on " << address << ":" << port << " (press Ctrl+C to terminate)" << std::endl;
-            std::shared_ptr<ssc::websocket::Server> w(new ssc::websocket::Server(handler, port, debug));
+            std::shared_ptr<ssc::websocket::Server> w = std::make_shared<ssc::websocket::Server>(handler, port, debug);
             signal(SIGINT, stop_simulation);
             while(!stop)
             {
@@ -72,11 +73,11 @@ class JSONWebSocketServer
                 JSONHandler(const ServiceT& simserver, const bool verbose_) : sim_server(simserver), verbose(verbose_), error_outputter()
                 {
                 }
-                virtual ~JSONHandler()
+                ~JSONHandler() override
                 {
                 }
 
-                void operator()(const ssc::websocket::Message& msg)
+                void operator()(const ssc::websocket::Message& msg) override
                 {
                     const std::string input_json = msg.get_payload();
                     if(verbose)

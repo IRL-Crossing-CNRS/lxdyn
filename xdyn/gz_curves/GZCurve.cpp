@@ -16,12 +16,12 @@
 
 struct GZ::Curve::Impl
 {
-    Impl(const Sim& sim) :
+    explicit Impl(const Sim& sim) :
         res(sim),
         f(std::bind(&ResultantForceComputer::resultant, &res, std::placeholders::_1)),
         k(std::bind(&ResultantForceComputer::K, &res, std::placeholders::_1))
     {
-        std::vector<double> x(13, 0);
+        std::vector<double> x(state::N, 0);
         sim.get_bodies().front()->update(sim.get_env(),x,0);
         const double total_volume = sim.get_bodies().front()->get_states().intersector->emerged_volume() +  sim.get_bodies().front()->get_states().intersector->immersed_volume();
         const double weight_of_water_displaced_by_fully_immersed_body = sim.get_env().rho*total_volume;
@@ -81,6 +81,8 @@ GZ::State GZ::Curve::get_Xeq() const
 GZ::Curve::Curve(const Sim& sim) : pimpl(new Impl(sim)), theta_eq(get_Xeq()(2))
 {
 }
+
+GZ::Curve::~Curve() = default;
 
 std::vector<double> GZ::Curve::get_phi(const double dphi, const double phi_max)
 {

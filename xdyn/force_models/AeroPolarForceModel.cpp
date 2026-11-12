@@ -1,6 +1,7 @@
 #include "AeroPolarForceModel.hpp"
 #include "xdyn/yaml_parser/external_data_structures_parsers.hpp"
 #include "xdyn/yaml_parser/parse_unit_value.hpp"
+#include <memory>
 #include <ssc/kinematics.hpp>
 #include "xdyn/yaml_parser/yaml_compat.h"
 #include <iostream>
@@ -22,8 +23,8 @@ std::string AeroPolarForceModel::model_name()
     return "aerodynamic polar";
 }
 
-AeroPolarForceModel::AeroPolarForceModel(const Input input, const std::string body_name_, const EnvironmentAndFrames& env):
-        ForceModel(input.name, input.angle_command ? std::vector<std::string>({input.angle_command.get()}) : std::vector<std::string>(), body_name_, env),
+AeroPolarForceModel::AeroPolarForceModel(const Input& input, const std::string& body_name_, const EnvironmentAndFrames& env):
+        ForceModel(input.name, input.angle_command ? std::vector<std::string>({input.angle_command.value()}) : std::vector<std::string>(), body_name_, env),
         Cl(),
         Cd(),
         reference_area(input.reference_area),
@@ -36,11 +37,11 @@ AeroPolarForceModel::AeroPolarForceModel(const Input input, const std::string bo
     const double eps = 0.1*M_PI/180;
     if (input.lift_coefficient.size()!=input.apparent_wind_angle.size() || input.drag_coefficient.size()!=input.apparent_wind_angle.size())
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Apparent wind angle, lift coefficient and drag coefficient must all have the same size.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Apparent wind angle, lift coefficient and drag coefficient must all have the same size.");
     }
     if(min_beta > eps || max_beta < M_PI-eps)
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Apparent wind angle must be provided from 0deg to either 180deg (symmetry) or 360deg.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Apparent wind angle must be provided from 0deg to either 180deg (symmetry) or 360deg.");
     }
     if (max_beta < M_PI+eps) // max_beta is close to pi
     {
@@ -60,8 +61,8 @@ AeroPolarForceModel::AeroPolarForceModel(const Input input, const std::string bo
         std::cerr << "WARNING: In an aerodynamic polar force model '" << name << "', you provided a maximum apparent wind higher than 360deg. All values over 360deg will be ignored." << std::endl;
         symmetry = false;
     }
-    Cl.reset(new ssc::interpolation::SplineVariableStep(input.apparent_wind_angle, input.lift_coefficient));
-    Cd.reset(new ssc::interpolation::SplineVariableStep(input.apparent_wind_angle, input.drag_coefficient));
+    Cl = std::make_unique<ssc::interpolation::SplineVariableStep>(input.apparent_wind_angle, input.lift_coefficient);
+    Cd = std::make_unique<ssc::interpolation::SplineVariableStep>(input.apparent_wind_angle, input.drag_coefficient);
 }
 
 AeroPolarForceModel::Input AeroPolarForceModel::parse(const std::string& yaml)
@@ -94,7 +95,7 @@ Wrench AeroPolarForceModel::get_force(const BodyStates& states, const double t, 
     double alpha = beta; // Angle of attack
     if (angle_command)
     {
-        alpha -= commands.at(angle_command.get());
+        alpha -= commands.at(angle_command.value());
     }
     alpha = remainder(alpha, 2*M_PI); // Putting alpha in [-pi,pi]
     if (alpha<0)

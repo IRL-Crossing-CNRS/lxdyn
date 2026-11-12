@@ -9,11 +9,10 @@
 #include "JonswapSpectrum.hpp"
 #include "xdyn/exceptions/InvalidInputException.hpp"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-#define NB_TRIALS 10
+constexpr int NB_TRIALS = 10;
 
 JonswapSpectrumTest::JonswapSpectrumTest() : a(ssc::random_data_generator::DataGenerator(92224))
 {
@@ -94,7 +93,7 @@ TEST_F(JonswapSpectrumTest, can_compute_the_wave_number_for_finite_depth)
     const double Hs = a.random<double>().between(1,80);
     const double gamma = a.random<double>().greater_than(0);
     const JonswapSpectrum S(Hs, Tp, gamma);
-    for (double h = 1 ; h < 1000 ; h=h+1)
+    for (int h = 1 ; h < 1000 ; ++h)
     {
         const double omega = a.random<double>().between(1,2);
         const double k = S.get_wave_number(omega, h);

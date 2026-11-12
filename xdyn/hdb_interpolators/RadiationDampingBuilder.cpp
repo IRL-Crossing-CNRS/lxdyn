@@ -12,11 +12,11 @@
 
 #include <boost/math/tools/roots.hpp>
 
+#include <memory>
 #include <ssc/interpolation.hpp>
 #include <ssc/integrate.hpp>
-typedef std::shared_ptr<ssc::interpolation::Interpolator> InterpolatorPtr;
+using InterpolatorPtr = std::shared_ptr<ssc::interpolation::Interpolator>;
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -31,7 +31,7 @@ std::function<double(double)> RadiationDampingBuilder::build_interpolator(const 
 {
     InterpolatorPtr i;
     const bool allow_queries_outside_bounds = true;
-    i.reset(new ssc::interpolation::SplineVariableStep(x, y, allow_queries_outside_bounds));
+    i = std::make_shared<ssc::interpolation::SplineVariableStep>(x, y, allow_queries_outside_bounds);
     std::function<double(double)> ret = [i](const double x){return i->f(x);};
     return ret;
 }
@@ -73,6 +73,7 @@ std::function<double(double)> RadiationDampingBuilder::build_retardation_functio
 {
     omega_max = find_integration_bound(Br, omega_min, omega_max, eps);
     std::vector<double> y;
+    y.reserve(taus.size());
     for (auto tau:taus)
     {
         y.push_back(cos_transform(Br, omega_min, omega_max, tau));

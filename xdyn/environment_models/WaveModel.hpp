@@ -29,8 +29,8 @@
 class WaveModel
 {
     public:
-        WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum);
-        WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum);
+        explicit WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum);
+        explicit WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum);
         WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum, const double constant_random_phase);
         WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum, const int random_number_generator_seed);
         virtual ~WaveModel();
@@ -141,6 +141,6 @@ class WaveModel
         mutable std::filesystem::file_time_type rays_file_time;
 };
 
-typedef std::shared_ptr<WaveModel> WaveModelPtr;
+using WaveModelPtr = std::shared_ptr<WaveModel>;
 
 #endif /* WAVEMODEL_HPP_ */

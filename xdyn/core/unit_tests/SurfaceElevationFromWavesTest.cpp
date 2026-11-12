@@ -16,8 +16,8 @@
 #include "xdyn/exceptions/InvalidInputException.hpp"
 #include "xdyn/external_data_structures/YamlWaveModelInput.hpp"
 #include "xdyn/external_data_structures/YamlWaveModelInput.hpp"
+#include <memory>
 #include <ssc/kinematics.hpp>
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -96,13 +96,14 @@ TEST_F(SurfaceElevationFromWavesTest, relative_wave_height)
     const double Hs = 3;
     const double Tp = 10;
     const double k_ = 4.*PI*PI/Tp/Tp/9.81;
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     SurfaceElevationFromWaves wave(get_model());
     const double phi = 3.4482969340598712549;
 //! [SurfaceElevationFromWavesTest relative_wave_height example]
 //! [SurfaceElevationFromWavesTest relative_wave_height expected output]
-    for (double t = 0 ; t < 30 ; t+=0.1)
+    for (int i = 0 ; i < 300 ; ++i)
     {
+        const double t = 0.1*i;
         const ssc::kinematics::Point P("NED", a.random<double>(), a.random<double>(), a.random<double>());
         const std::vector<double> x{P.x()};
         const std::vector<double> y{P.y()};
@@ -118,13 +119,14 @@ TEST_F(SurfaceElevationFromWavesTest, dynamic_pressure)
     const double Hs = 3;
     const double Tp = 10;
     const double k_ = 4.*PI*PI/Tp/Tp/9.81;
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     SurfaceElevationFromWaves wave(get_model());
     const double phi = 3.4482969340598712549;
 //! [SurfaceElevationFromWavesTest dynamic_pressure example]
 //! [SurfaceElevationFromWavesTest dynamic_pressure expected output]
-    for (double t = 0 ; t < 30 ; t+=0.1)
+    for (int i = 0 ; i < 300 ; ++i)
     {
+        const double t = 0.1*i;
 
         const ssc::kinematics::Point Q("NED", a.random<double>().between(-100, 100), a.random<double>().between(-100, 100), 6);
         ssc::kinematics::PointMatrix P(Q.v, "NED");
@@ -141,7 +143,7 @@ TEST_F(SurfaceElevationFromWavesTest, dynamic_pressure)
 
 TEST_F(SurfaceElevationFromWavesTest, orbital_velocity)
 {
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     SurfaceElevationFromWaves wave(get_model());
     const double g = 4.57;
     const std::vector<double> x {3.7};
@@ -157,7 +159,7 @@ TEST_F(SurfaceElevationFromWavesTest, orbital_velocity)
 
 TEST_F(SurfaceElevationFromWavesTest, bug_detected_by_FS)
 {
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     YamlWaveOutput out;
     out.frame_of_reference = "NED";
     out.xmin = -10;
@@ -190,7 +192,7 @@ TEST_F(SurfaceElevationFromWavesTest, dynamic_pressure_plus_hydrostatic)
     const double k_ = 1;
     const double g = 9.81;
     const double rho = 1024;
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     const double h = 20;
     const double omega0 = sqrt(g*k_*tanh(k_*h));
     const double phi = 0;//-PI;

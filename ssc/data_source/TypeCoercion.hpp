@@ -22,7 +22,7 @@ namespace ssc
         struct enable_if {};
 
         template<class T>
-        struct enable_if<true, T> { typedef T type; };
+        struct enable_if<true, T> { using type = T; };
 
         template<class T> struct is_arithmetic { const static bool value = false; };
         #define DECLARE_ARITHMETIC_TYPE(t) template<> struct is_arithmetic<t> { const static bool value = true; }
@@ -52,6 +52,8 @@ namespace ssc
         {
             ret.push_back((double)thing_to_convert);
         }
+
+        void coerce(std::list<double>& ret, const std::vector<bool>& thing_to_convert);
 
         template <typename T> void coerce(std::list<double>& ret, const std::vector<T>& thing_to_convert)
         {

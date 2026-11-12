@@ -9,12 +9,12 @@
 #define ENVIRONMENTANDFRAMES_HPP_
 
 #include "xdyn/core/Body.hpp"
-#include "xdyn/core/StateMacros.hpp"
+#include "xdyn/core/StateLayout.hpp"
 #include "xdyn/core/SurfaceElevationInterface.hpp"
 #include "xdyn/environment_models/WindModel.hpp"
 #include "xdyn/environment_models/UWCurrentModel.hpp"
 #include "xdyn/external_data_structures/YamlRotation.hpp"
-#include <boost/optional.hpp>
+#include <optional>
 #include <ssc/kinematics.hpp>
 
 class Observer;
@@ -41,7 +41,7 @@ struct EnvironmentAndFrames
     Eigen::Vector3d get_UWCurrent (const Eigen::Vector3d& position, const double t) const;
 
     private:
-        boost::optional<double> rho_air;
+        std::optional<double> rho_air;
 };
 
 #endif /* ENVIRONMENTANDFRAMES_HPP_ */

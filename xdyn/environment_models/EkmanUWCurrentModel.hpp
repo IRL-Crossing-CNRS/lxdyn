@@ -21,7 +21,7 @@ public:
     struct Input
     {
         Input();
-        Input(Seabed);
+        explicit Input(Seabed);
         Seabed seabed;
         double top_ekman_depth;     ///< Top layer thickness (m)
         double bottom_ekman_depth;  ///< Bottom layer thickness (m)
@@ -36,10 +36,10 @@ public:
         bool depth_from_wind;       ///< "layer thickness follows wind": D = 7.6 U10 / sqrt(sin|latitude|)
         std::string weather_file;   ///< Optional: a change of wind during the run (see below)
     };
-    EkmanUWCurrentModel(const Input& input);
-    virtual ~EkmanUWCurrentModel();
+    explicit EkmanUWCurrentModel(const Input& input);
+    ~EkmanUWCurrentModel() override;
 
-    virtual Eigen::Vector3d get_UWCurrent(const Eigen::Vector3d& position, const double time, const double wave_height) const override;
+    Eigen::Vector3d get_UWCurrent(const Eigen::Vector3d& position, const double time, const double wave_height) const override;
 
     static std::string model_name();
     static Input parse(const std::string&);

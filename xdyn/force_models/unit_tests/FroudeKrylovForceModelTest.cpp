@@ -22,12 +22,11 @@
 
 #include <ssc/kinematics.hpp>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-#define EPS 1E-8
-#define BIG_EPS 1E-3
+constexpr double EPS = 1E-8;
+constexpr double BIG_EPS = 1E-3;
 
 FroudeKrylovForceModelTest::FroudeKrylovForceModelTest() : a(ssc::random_data_generator::DataGenerator(8511545))
 {

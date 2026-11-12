@@ -39,13 +39,13 @@ namespace ssc
 {
     namespace data_source
     {
-        typedef std::shared_ptr<const DataSourceModule> ModulePtr;
+        using ModulePtr = std::shared_ptr<const DataSourceModule>;
 
         #if USE_HASH_MAPS
-            typedef std::unordered_map<TypedModuleName,ModulePtr > FromName2Module;
-            typedef std::unordered_map<TypedSignalName,TypedModuleName> FromSignal2Module;
-            typedef std::unordered_map<TypedModuleName,std::set<TypedModuleName> > DependantModules;
-            typedef std::unordered_map<TypedModuleName,bool > UpdateState;
+            using FromName2Module = std::unordered_map<TypedModuleName,ModulePtr >;
+            using FromSignal2Module = std::unordered_map<TypedSignalName,TypedModuleName>;
+            using DependantModules = std::unordered_map<TypedModuleName,std::set<TypedModuleName> >;
+            using UpdateState = std::unordered_map<TypedModuleName,bool >;
         #else
             typedef std::map<TypedModuleName,ModulePtr > FromName2Module;
             typedef std::map<TypedSignalName,TypedModuleName> FromSignal2Module;
@@ -124,13 +124,12 @@ namespace ssc
                         in_module = in_module_back;
                         check_out();
                     }
-                    catch(DataSourceException& e)
+                    catch(const DataSourceException&)
                     {
-                        throw(e);
+                        throw;
                     }
-                    catch(...)
+                    catch(...) // NOLINT(bugprone-empty-catch): m->update() may throw here, as only its dependencies are wanted
                     {
-                        // It's OK for m->update() to throw at this stage because we just want to retrieve its dependencies
                     }
                     modules.push_back(typify<T>(module.get_name()));
                     readonly = read_only_bak;
@@ -577,7 +576,7 @@ namespace ssc
                   */
                 void check_out();
 
-                static const std::string default_setter; //!< Default name of the DataSource user
+                static constexpr const char* default_setter = "Unregistered DataSource user"; //!< Default name of the DataSource user
 
                 /**  \returns A map containing all signals of a given type
                   *  \snippet data_source/unit_tests/src/DataSourceTest.cpp DataSourceTest get_all_example

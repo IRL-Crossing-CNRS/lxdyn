@@ -15,9 +15,9 @@ class EverythingObserver : public MapObserver
 {
     public:
         EverythingObserver();
-        void observe_before_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems); // Writes before calling the solver. Cf. solve.hpp Only what was requested by the user in the YAML file
-        void observe_after_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems); // Writes after calling the solver. Cf. solve.hpp Only what was requested by the user in the YAML file
-        std::vector<Res> get() const;
+        void observe_before_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems) override; // Writes before calling the solver. Cf. solve.hpp Only what was requested by the user in the YAML file
+        void observe_after_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems) override; // Writes after calling the solver. Cf. solve.hpp Only what was requested by the user in the YAML file
+        std::vector<Res> get_res() const;
 
     private:
         std::function<void(Res&, const double)> get_inserter(const std::string& body_name, const std::string& var_name) const;

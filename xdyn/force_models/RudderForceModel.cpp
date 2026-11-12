@@ -12,7 +12,6 @@
 #include "xdyn/yaml_parser/parse_unit_value.hpp"
 #include "xdyn/yaml_parser/yaml_compat.h"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -143,7 +142,7 @@ RudderForceModel::InOutWake<ssc::kinematics::Point> RudderForceModel::RudderMode
 }
 
 double RudderForceModel::RudderModel::get_fluid_angle(
-    const ssc::kinematics::Point Vs   //!< Ship speed relative to the fluid, inside & outside wake
+    const ssc::kinematics::Point& Vs   //!< Ship speed relative to the fluid, inside & outside wake
     ) const
 {
     return atan2(Vs.y(), Vs.x());
@@ -163,7 +162,7 @@ RudderForceModel::InOutWake<ssc::kinematics::Vector6d> RudderForceModel::RudderM
 
 ssc::kinematics::Vector6d RudderForceModel::RudderModel::get_wrench(
     const double rudder_angle, //!< Rudder angle (in radian): positive if rudder on port side
-    ssc::kinematics::Point Vs,           //!< Speed of the ship relative to the fluid (in m/s)
+    const ssc::kinematics::Point& Vs,           //!< Speed of the ship relative to the fluid (in m/s)
     const double area          //!< Rudder area (in or outside wake) in m^2
     ) const
 {
@@ -197,11 +196,11 @@ RudderForceModel::RudderForceModel(
         propulsionModel(WageningenControlledForceModel(input_, body_name_, env)),
         rudderModel(input_, env.rho, env.nu),
         w(input_.wake_coefficient),
-        m_propeller_wrench_internal_frame_at_P(new Wrench(ssc::kinematics::Point(input_.position_of_propeller_frame.frame,0,0,0))),
-        m_propeller_wrench_body_frame_at_Ob(new Wrench(ssc::kinematics::Point(body_name,0,0,0))),
-        m_propeller_wrench_NED_frame_at_G(new Wrench(ssc::kinematics::Point("NED",0,0,0))),
-        m_rudder_wrench_body_frame_at_Ob(new Wrench(ssc::kinematics::Point(body_name,0,0,0))),
-        m_rudder_wrench_NED_frame_at_G(new Wrench(ssc::kinematics::Point("NED",0,0,0)))
+        m_propeller_wrench_internal_frame_at_P(new Wrench(ssc::kinematics::Point(input_.position_of_propeller_frame.frame,0,0,0), input_.position_of_propeller_frame.frame)),
+        m_propeller_wrench_body_frame_at_Ob(new Wrench(ssc::kinematics::Point(body_name,0,0,0), body_name)),
+        m_propeller_wrench_NED_frame_at_G(new Wrench(ssc::kinematics::Point("NED",0,0,0), "NED")),
+        m_rudder_wrench_body_frame_at_Ob(new Wrench(ssc::kinematics::Point(body_name,0,0,0), body_name)),
+        m_rudder_wrench_NED_frame_at_G(new Wrench(ssc::kinematics::Point("NED",0,0,0), "NED"))
 {
 }
 

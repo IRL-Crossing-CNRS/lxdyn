@@ -16,11 +16,11 @@ class ResultantForceComputerTest : public ::testing::Test
 {
     protected:
         ResultantForceComputerTest();
-        virtual ~ResultantForceComputerTest();
-        virtual void SetUp();
-        virtual void TearDown();
+        ~ResultantForceComputerTest() override;
+        void SetUp() override;
+        void TearDown() override;
         ssc::random_data_generator::DataGenerator a;
-        static Sim sim;
+        Sim& sim;
 };
 
 #endif  /* RESULTANTFORCECOMPUTERTEST_HPP_ */

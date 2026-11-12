@@ -12,17 +12,20 @@
 #include "xdyn/test_data_generator/stl_data.hpp"
 #include "xdyn/test_data_generator/yaml_data.hpp"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #include <set>
 
 #define PI M_PI
-#define EPS (1E-10)
-#define BIG_EPS (1E-5)
+constexpr double EPS = 1E-10;
+constexpr double BIG_EPS = 1E-5;
 
-Sim ResultantForceComputerTest::sim = GZ::make_sim(test_data::oscillating_cube_example(), test_data::cube());
+static Sim& shared_sim()
+{
+    static Sim ret = GZ::make_sim(test_data::oscillating_cube_example(), test_data::cube());
+    return ret;
+}
 
-ResultantForceComputerTest::ResultantForceComputerTest() : a(ssc::random_data_generator::DataGenerator(87878899))
+ResultantForceComputerTest::ResultantForceComputerTest() : a(ssc::random_data_generator::DataGenerator(87878899)), sim(shared_sim())
 {
 }
 
@@ -45,7 +48,7 @@ TEST_F(ResultantForceComputerTest, sim_only_contains_gravity_and_hydrostatic_for
 
     std::map<std::string,std::vector<ForcePtr> > forces = s.get_forces();
     std::set<std::string> force_models;
-    for (auto force:forces["cube"])
+    for (const auto& force:forces["cube"])
     {
         force_models.insert(force->get_name());
     }

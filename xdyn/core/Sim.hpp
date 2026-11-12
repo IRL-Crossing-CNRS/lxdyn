@@ -26,7 +26,7 @@
 #include <ssc/data_source.hpp>
 #include <ssc/kinematics.hpp>
 #include "xdyn/core/Body.hpp"
-#include "xdyn/core/StateMacros.hpp"
+#include "xdyn/core/StateLayout.hpp"
 #include "xdyn/core/EnvironmentAndFrames.hpp"
 #include "xdyn/core/ForceModel.hpp"
 #include "xdyn/core/SurfaceElevationGrid.hpp"
@@ -34,8 +34,8 @@
 #include <ssc/solver/ContinuousSystem.hpp>
 #include <ssc/solver/DiscreteSystem.hpp>
 
-typedef std::map<std::string, std::map< std::string,ssc::kinematics::Vector6d > > OuputtedForces;
-typedef std::vector<std::pair<std::string,std::vector<std::string> > > VectorOfStringModelForEachBody;
+using OuputtedForces = std::map<std::string, std::map< std::string,ssc::kinematics::Vector6d > >;
+using VectorOfStringModelForEachBody = std::vector<std::pair<std::string,std::vector<std::string> > >;
 
 class Observer;
 
@@ -47,20 +47,20 @@ class Sim : public ssc::solver::ContinuousSystem
          * - bodies: a list of bodies
          * - forces: a list of forces applying to the bodies
          * - env: the environment object. It includes the environmental constants 
-         * - x: the states (StateType == std::vector<double>). There are 13 states per body:
-         *            _X(x,i) = x-coordinate of COG of body i in NED reference frame
-         *            _Y(x,i) = y-coordinate of COG of body i in NED reference frame
-         *            _Z(x,i) = z-coordinate of COG of body i in NED reference frame
-         *            _U(x,i) = velocity of COG of body i along x axis of body reference frame
-         *            _V(x,i) = velocity of COG of body i along y axis of body reference frame
-         *            _W(x,i) = velocity of COG of body i along z axis of body reference frame
-         *            _P(x,i) = coordinates of rotation vector of body i along x axis of body reference frame
-         *            _Q(x,i) = coordinates of rotation vector of body i along y axis of body reference frame
-         *            _R(x,i) = coordinates of rotation vector of body i along z axis of body reference frame
-         *            _QR(x,i) = r-coordinate of quaternion of body i
-         *            _QI(x,i) = i-coordinate of quaternion of body i
-         *            _QJ(x,i) = j-coordinate of quaternion of body i
-         *            _QK(x,i) = k-coordinate of quaternion of body i
+         * - x: the states (StateType == std::vector<double>). There are 13 states per body i, x[state::index(i, v)] for each v below (see StateLayout.hpp):
+         *            state::X  = x-coordinate of COG of body i in NED reference frame
+         *            state::Y  = y-coordinate of COG of body i in NED reference frame
+         *            state::Z  = z-coordinate of COG of body i in NED reference frame
+         *            state::U  = velocity of COG of body i along x axis of body reference frame
+         *            state::V  = velocity of COG of body i along y axis of body reference frame
+         *            state::W  = velocity of COG of body i along z axis of body reference frame
+         *            state::P  = coordinates of rotation vector of body i along x axis of body reference frame
+         *            state::Q  = coordinates of rotation vector of body i along y axis of body reference frame
+         *            state::R  = coordinates of rotation vector of body i along z axis of body reference frame
+         *            state::QR = r-coordinate of quaternion of body i
+         *            state::QI = i-coordinate of quaternion of body i
+         *            state::QJ = j-coordinate of quaternion of body i
+         *            state::QK = k-coordinate of quaternion of body i
          * - command_listener: the instructions
          */
         Sim(const std::vector<BodyPtr>& bodies,
@@ -80,7 +80,7 @@ class Sim : public ssc::solver::ContinuousSystem
          *  \param 
          *  \returns dxdt the vector of states derivatives.
         */
-        void dx_dt(const StateType& x, StateType& dxdt, const double t);
+        void dx_dt(const StateType& x, StateType& dxdt, const double t) override;
 
         /** \brief Force states to a prescribed value 
          *  \details It is possible to make some states of some bodies follow a given path. The states
@@ -93,7 +93,7 @@ class Sim : public ssc::solver::ContinuousSystem
          *  \returns Updated states according to forcing requirements
         */
 
-        void force_states(StateType& x, const double t) const;
+        void force_states(StateType& x, const double t) const override;
 
         /** @} */ 
 
@@ -134,19 +134,19 @@ class Sim : public ssc::solver::ContinuousSystem
 
         /** \brief Sets the value of one of the system's discrete states. In our case, these discrete states are the command values calculated by the controllers. This method is used by the controllers to store the updated command values in the DataSource, for use by controlled forces (e.g. propellers).
          */
-        void set_discrete_state(const std::string &state_name, const double value);
+        void set_discrete_state(const std::string &state_name, const double value) override;
 
         /** \brief Gets the value of the given input from the datasource
          *
          * Used by controllers to get the inputs they need (setpoints or commands) to compute a command.
          */
-        double get_input_value(const std::string &name) const;
+        double get_input_value(const std::string &name) const override;
 
         /** \brief Gets the value of a Sim state ("x", "u", "qr", "phi", ...)
          *
          * Used by controllers to get the states they need to compute a command.
          */
-        double get_state_value(const std::string &name) const;
+        double get_state_value(const std::string &name) const override;
 
         void reset_history();
         std::vector<std::string> get_command_names() const;
@@ -154,7 +154,7 @@ class Sim : public ssc::solver::ContinuousSystem
         /** \brief This function calls all force models from the current body states.
           * \detail This should be called before the first call to Sim::output if the initial state (at construction) is to be recorded.
           */
-        void initialize_system_outputs_before_first_observation();
+        void initialize_system_outputs_before_first_observation() override;
 
     private:
         ssc::kinematics::UnsafeWrench sum_of_forces(const StateType& x, const BodyPtr& body, const double t);

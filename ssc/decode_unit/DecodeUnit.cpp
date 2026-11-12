@@ -6,6 +6,7 @@
 #include "ssc/decode_unit/DecodeUnit.h"
 #include <iostream>
 #include <cmath>
+#include <utility>
 
 // NOTE : if i use #include <cmath>, then functions are either
 // in std namespace or global namespace, according to the machine and compiler...
@@ -13,7 +14,7 @@
 
 using namespace ssc::decode_unit;
 
-double ssc::decode_unit::decodeUnit( std::string unit )
+double ssc::decode_unit::decodeUnit( const std::string& unit )
 {
     double val;
     try {
@@ -29,7 +30,7 @@ double ssc::decode_unit::decodeUnit( std::string unit )
     return val;
 }
 
-double ssc::decode_unit::decodeUnit( std::string unit , std::map<std::string,double> &known_units )
+double ssc::decode_unit::decodeUnit( const std::string& unit , std::map<std::string,double> &known_units )
 {
     double val;
     try {
@@ -60,7 +61,7 @@ std::string ssc::decode_unit::UnitDecoder::Token::string_value() {std::string tm
 int         ssc::decode_unit::UnitDecoder::Token::int_value()    {return 0;}
 double      ssc::decode_unit::UnitDecoder::Token::double_value() {return 0.0;}
 
-ssc::decode_unit::UnitDecoder::WordToken::WordToken(std::string word) : m_word(word) {}
+ssc::decode_unit::UnitDecoder::WordToken::WordToken(std::string word) : m_word(std::move(word)) {}
 ssc::decode_unit::UnitDecoder::WordToken::~WordToken() {}
 ssc::decode_unit::UnitDecoder::e_token_type ssc::decode_unit::UnitDecoder::WordToken::type() {return k_word;}
 std::string ssc::decode_unit::UnitDecoder::WordToken::description() {return std::string("Word token ") + m_word;}
@@ -104,19 +105,19 @@ ssc::decode_unit::UnitDecoder::e_token_type ssc::decode_unit::UnitDecoder::Right
 std::string ssc::decode_unit::UnitDecoder::RightParToken::description() {return std::string("Right parenthese )");}
 
 
-ssc::decode_unit::UnitDecoder::UnitDecoder(std::string unit)
+ssc::decode_unit::UnitDecoder::UnitDecoder(const std::string& unit)
 :    m_stream(unit) ,
     m_next_char(0),
-    m_token(NULL),
+    m_token(nullptr),
     m_char_table(get_char_table()) ,
     m_known_units(get_known_units())
 {
 }
 
-ssc::decode_unit::UnitDecoder::UnitDecoder(std::string unit , std::map<std::string,double> &known_units)
+ssc::decode_unit::UnitDecoder::UnitDecoder(const std::string& unit , std::map<std::string,double> &known_units)
 :    m_stream(unit) ,
     m_next_char(0),
-    m_token(NULL),
+    m_token(nullptr),
     m_char_table(get_char_table()) ,
     m_known_units(known_units)
 {
@@ -129,8 +130,8 @@ ssc::decode_unit::UnitDecoder::~UnitDecoder()
 
 void ssc::decode_unit::UnitDecoder::clear_token()
 {
-    if (m_token != NULL) delete m_token;
-    m_token = NULL;
+    if (m_token != nullptr) delete m_token;
+    m_token = nullptr;
 }
 
 // advance one character
@@ -175,7 +176,7 @@ ssc::decode_unit::UnitDecoder::Token *ssc::decode_unit::UnitDecoder::scan()
             break;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ssc::decode_unit::UnitDecoder::LeftParToken *ssc::decode_unit::UnitDecoder::scan_leftParenthesis()
@@ -303,7 +304,7 @@ double ssc::decode_unit::UnitDecoder::decode_expression()
     // 1) accumulate tokens
     std::vector<Token *> tokens;
     try {
-        while( m_token != NULL && m_token->type() != k_rightparenthesis) {
+        while( m_token != nullptr && m_token->type() != k_rightparenthesis) {
             switch( m_token->type() ) {
             case k_operation:
             case k_integer:
@@ -318,7 +319,7 @@ double ssc::decode_unit::UnitDecoder::decode_expression()
                 } else if(isWordToken(m_token,"cubic")) {
                     clear_token();
                     m_token = scan();
-                    if(m_token != NULL && isWordToken(m_token)) {
+                    if(m_token != nullptr && isWordToken(m_token)) {
                         double val = decode_word(m_token);
                         clear_token();
                         m_token = scan();
@@ -329,7 +330,7 @@ double ssc::decode_unit::UnitDecoder::decode_expression()
                 } else if(isWordToken(m_token,"square")) {
                     clear_token();
                     m_token = scan();
-                    if(m_token != NULL && isWordToken(m_token)) {
+                    if(m_token != nullptr && isWordToken(m_token)) {
                         double val = decode_word(m_token);
                         clear_token();
                         m_token = scan();
@@ -382,14 +383,14 @@ double ssc::decode_unit::UnitDecoder::decode_expression()
         // 3) delete tokens
         for(size_t i=0;i<tokens.size();i++) {
             delete tokens[i];
-            tokens[i]=NULL;
+            tokens[i]=nullptr;
         }
 
-    } catch( const std::string mess ) {
+    } catch( const std::string& ) {
         // delete tokens
         for(size_t i=0;i<tokens.size();i++) {
             delete tokens[i];
-            tokens[i]=NULL;
+            tokens[i]=nullptr;
         }
         // rethrow
         throw;
@@ -901,7 +902,7 @@ std::map<std::string,double> ssc::decode_unit::UnitDecoder::get_known_units()
 }
 
 
-void ssc::decode_unit::UnitDecoder::extend_with_short_metric_prefix(std::map<std::string,double> &units, std::string unit )
+void ssc::decode_unit::UnitDecoder::extend_with_short_metric_prefix(std::map<std::string,double> &units, const std::string& unit )
 {
     units[ std::string("y") + unit ]=1.0e-24 * units[ unit ];
     units[ std::string("z") + unit ]=1.0e-21 * units[ unit ];
@@ -925,7 +926,7 @@ void ssc::decode_unit::UnitDecoder::extend_with_short_metric_prefix(std::map<std
     units[ std::string("Y") + unit ]=1.0e+24 * units[ unit ];
 }
 
-void ssc::decode_unit::UnitDecoder::extend_with_long_metric_prefix(std::map<std::string,double> &units, std::string unit )
+void ssc::decode_unit::UnitDecoder::extend_with_long_metric_prefix(std::map<std::string,double> &units, const std::string& unit )
 {
     units[ std::string("yocto") + unit ]=1.0e-24 * units[ unit ];
     units[ std::string("zepto") + unit ]=1.0e-21 * units[ unit ];
@@ -949,13 +950,13 @@ void ssc::decode_unit::UnitDecoder::extend_with_long_metric_prefix(std::map<std:
     units[ std::string("yotta") + unit ]=1.0e+24 * units[ unit ];
 }
 
-void ssc::decode_unit::UnitDecoder::extend_with_short_metric_prefix(std::map<std::string,double> &units, std::string unit , double value )
+void ssc::decode_unit::UnitDecoder::extend_with_short_metric_prefix(std::map<std::string,double> &units, const std::string& unit , double value )
 {
     units[ unit ]=value;
     extend_with_short_metric_prefix( units , unit );
 }
 
-void ssc::decode_unit::UnitDecoder::extend_with_long_metric_prefix(std::map<std::string,double> &units, std::string unit , double value )
+void ssc::decode_unit::UnitDecoder::extend_with_long_metric_prefix(std::map<std::string,double> &units, const std::string& unit , double value )
 {
     units[ unit ]=value;
     extend_with_long_metric_prefix( units , unit );

@@ -11,7 +11,6 @@
 #include "xdyn/exceptions/InternalErrorException.hpp"
 #include "xdyn/exceptions/InvalidInputException.hpp"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 #include <algorithm>
@@ -28,7 +27,7 @@ DiscreteDirectionalWaveSpectrum common(
         const size_t ndir,                 //!< Number of directions in discrete spectrum
         const bool equal_energy_bins,      //!< Choose omegas so that integral of S between two successive omegas is constant
         const bool periodic,               //!< Make the wave field repeat over the sizes below
-        const std::vector<double> sizes    //!< Repetition sizes in metres, largest first
+        const std::vector<double>& sizes    //!< Repetition sizes in metres, largest first
         );
 DiscreteDirectionalWaveSpectrum common(
         const WaveSpectralDensity& S,      //!< Frequency spectrum
@@ -39,7 +38,7 @@ DiscreteDirectionalWaveSpectrum common(
         const size_t ndir,                 //!< Number of directions in discrete spectrum
         const bool equal_energy_bins,      //!< Choose omegas so that integral of S between two successive omegas is constant
         const bool periodic,               //!< Make the wave field repeat over the sizes below
-        const std::vector<double> sizes    //!< Repetition sizes in metres, largest first
+        const std::vector<double>& sizes    //!< Repetition sizes in metres, largest first
         )
 {
     DiscreteDirectionalWaveSpectrum ret;
@@ -76,7 +75,7 @@ DiscreteDirectionalWaveSpectrum discretize(
         const Stretching& stretching,      //!< Dilate z-axis to properly compute orbital velocities (delta-stretching)
         const bool equal_energy_bins,      //!< Choose omegas so the integral of S between two successive omegas is constant
         const bool periodic,               //!< Make the wave field repeat over the sizes below
-        const std::vector<double> sizes    //!< Repetition sizes in metres, largest first
+        const std::vector<double>& sizes    //!< Repetition sizes in metres, largest first
         )
 {
     DiscreteDirectionalWaveSpectrum ret = common(S, D, omega_min, omega_max, nfreq, ndir, equal_energy_bins, periodic, sizes);
@@ -104,7 +103,7 @@ DiscreteDirectionalWaveSpectrum discretize(
         const Stretching& stretching,      //!< Dilate z-axis to properly compute orbital velocities (delta-stretching)
         const bool equal_energy_bins,      //!< Choose omegas so the integral of S between two successive omegas is constant
         const bool periodic,               //!< Make the wave field repeat over the sizes below
-        const std::vector<double> sizes    //!< Repetition sizes in metres, largest first
+        const std::vector<double>& sizes    //!< Repetition sizes in metres, largest first
         )
 {
     DiscreteDirectionalWaveSpectrum ret = common(S, D, omega_min, omega_max, nfreq, ndir, equal_energy_bins, periodic, sizes);
@@ -123,7 +122,7 @@ DiscreteDirectionalWaveSpectrum discretize(
     return ret;
 }
 
-typedef std::pair<double,size_t> ValIdx;
+using ValIdx = std::pair<double,size_t>;
 bool comparator ( const ValIdx& l, const ValIdx& r);
 bool comparator ( const ValIdx& l, const ValIdx& r)
    { return l.first > r.first; }

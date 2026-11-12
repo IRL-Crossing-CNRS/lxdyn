@@ -29,7 +29,7 @@ class MMGRudderForceModel : public ForceModel
     struct Yaml : MMGPropellerForceModel::Yaml
     {
         Yaml();
-        Yaml(const MMGPropellerForceModel::Yaml& yaml);
+        explicit Yaml(const MMGPropellerForceModel::Yaml& yaml);
         double Ar; //!< Rudder projected area without considering the horn part(in m^2)
         double b;  //!< Rudder span (in m)
         double xH_adim; //!< Non-dimensional longitudinal coordinate of acting point of the additional lateral force in MMG frame
@@ -97,7 +97,7 @@ class MMGRudderForceModel : public ForceModel
         ssc::kinematics::Vector6d get_wrench(
             const double
                 rudder_angle, //!< Rudder angle (in radian): positive if rudder on port side
-            const ssc::kinematics::Point Vs, //!< Mean inflow velocity (body frame) relative to the ship
+            const ssc::kinematics::Point& Vs, //!< Mean inflow velocity (body frame) relative to the ship
                                              //!< at the rudder location in m/s
             const double area               //!< Rudder area in m^2
         ) const;
@@ -127,7 +127,7 @@ class MMGRudderForceModel : public ForceModel
          *  \returns Angle in radian
          */
         double get_fluid_angle(
-            const ssc::kinematics::Point Vs //!< Inflow velocity relative to the ship in body frame
+            const ssc::kinematics::Point& Vs //!< Inflow velocity relative to the ship in body frame
                                             //!< (m/s)
         ) const;
 

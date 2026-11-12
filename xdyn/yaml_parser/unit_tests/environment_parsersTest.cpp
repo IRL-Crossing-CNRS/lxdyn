@@ -13,17 +13,20 @@
 #include <boost/algorithm/string.hpp> // replace in string
 #include <boost/regex.hpp>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
-#define DEG (180./PI)
+constexpr double DEG = 180./PI;
 
 #include <fstream>
 #include <sstream>
 
-const YamlWaveModel environment_parsersTest::yaml = parse_waves(test_data::waves_for_parser_validation_only());
+static const YamlWaveModel& shared_yaml()
+{
+    static const YamlWaveModel ret = parse_waves(test_data::waves_for_parser_validation_only());
+    return ret;
+}
 
-environment_parsersTest::environment_parsersTest() : a(ssc::random_data_generator::DataGenerator(1212))
+environment_parsersTest::environment_parsersTest() : a(ssc::random_data_generator::DataGenerator(1212)), yaml(shared_yaml())
 {
 }
 
@@ -165,14 +168,14 @@ TEST_F(environment_parsersTest, can_parse_cos2s_spreading)
 
 TEST_F(environment_parsersTest, airy_wave_model)
 {
-    const boost::optional<int> seed = parse_seed_of_random_number_generator("seed of the random data generator: 1234\n");
+    const std::optional<int> seed = parse_seed_of_random_number_generator("seed of the random data generator: 1234\n");
     ASSERT_TRUE(seed);
     ASSERT_EQ(1234, seed);
 }
 
 TEST_F(environment_parsersTest, can_force_seed_to_zero)
 {
-    const boost::optional<int> seed = parse_seed_of_random_number_generator("seed of the random data generator: none\n");
+    const std::optional<int> seed = parse_seed_of_random_number_generator("seed of the random data generator: none\n");
     ASSERT_FALSE(seed);
 }
 
@@ -236,9 +239,13 @@ TEST_F(environment_parsersTest, can_parse_equal_energy_bins_parameter)
     ASSERT_FALSE(res.discretization.equal_energy_bins);
 }
 
-const YamlWaveModel environment_parsers_from_list_of_rays_Test::yaml = parse_waves(test_data::waves_from_a_list_of_rays_for_parser_validation_only());
+static const YamlWaveModel& shared_rays_yaml()
+{
+    static const YamlWaveModel ret = parse_waves(test_data::waves_from_a_list_of_rays_for_parser_validation_only());
+    return ret;
+}
 
-environment_parsers_from_list_of_rays_Test::environment_parsers_from_list_of_rays_Test() : a(ssc::random_data_generator::DataGenerator(1212))
+environment_parsers_from_list_of_rays_Test::environment_parsers_from_list_of_rays_Test() : a(ssc::random_data_generator::DataGenerator(1212)), yaml(shared_rays_yaml())
 {
 }
 

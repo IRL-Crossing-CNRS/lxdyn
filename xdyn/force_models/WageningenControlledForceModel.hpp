@@ -10,8 +10,8 @@
 
 #include "AbstractWageningen.hpp"
 
-#define NB_COEFF_KT 39
-#define NB_COEFF_KQ 47
+constexpr int NB_COEFF_KT = 39;
+constexpr int NB_COEFF_KQ = 47;
 
 #include "xdyn/external_data_structures/YamlPosition.hpp"
 
@@ -23,15 +23,15 @@ class WageningenControlledForceModel : public AbstractWageningen
         struct Yaml : public AbstractWageningen::Yaml
         {
             Yaml();
-            Yaml(const AbstractWageningen::Yaml& y);
-            virtual ~Yaml(){}
+            explicit Yaml(const AbstractWageningen::Yaml& y);
+            ~Yaml() override{}
             size_t number_of_blades;
             double blade_area_ratio;
         };
 
         WageningenControlledForceModel(const Yaml& input, const std::string& body_name, const EnvironmentAndFrames& env);
-        double get_Kt(const std::map<std::string,double>& commands, const double J) const;
-        double get_Kq(const std::map<std::string,double>& commands, const double J) const;
+        double get_Kt(const std::map<std::string,double>& commands, const double J) const override;
+        double get_Kq(const std::map<std::string,double>& commands, const double J) const override;
         double Kt(const size_t Z, const double AE_A0, const double P_D, const double J) const;
         double Kq(const size_t Z, const double AE_A0, const double P_D, const double J) const;
         static std::string model_name();

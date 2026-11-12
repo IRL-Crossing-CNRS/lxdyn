@@ -16,12 +16,11 @@
 #include "xdyn/test_data_generator/yaml_data.hpp"
 
 #include <ssc/integrate.hpp>
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 #include <fstream>
 
-#define EPS 5E-2
+constexpr double EPS = 5E-2;
 
 RadiationDampingForceModelTest::RadiationDampingForceModelTest() : a(ssc::random_data_generator::DataGenerator(2121))
 {
@@ -39,8 +38,8 @@ void RadiationDampingForceModelTest::TearDown()
 {
 }
 
-double compute_Ma_from_K(const double omega, const double A, std::function<double(double)> K, const double tau_min, const double tau_max);
-double compute_Ma_from_K(const double omega, const double A, std::function<double(double)> K, const double tau_min, const double tau_max)
+double compute_Ma_from_K(const double omega, const double A, const std::function<double(double)>& K, const double tau_min, const double tau_max);
+double compute_Ma_from_K(const double omega, const double A, const std::function<double(double)>& K, const double tau_min, const double tau_max)
 {
     const std::function<double(double)> g = [omega, K](double tau){return K(tau)*sin(omega*tau);};
     return A - (1/omega)*ssc::integrate::Simpson(g).integrate_f(tau_min, tau_max, 1e-2);
@@ -55,6 +54,8 @@ std::shared_ptr<HDBParser> RadiationDampingForceModelTest::get_hdb_data(const Ya
     const size_t N = 460;
     const double A = 1000;
     const auto omegas = RadiationDampingBuilder(TypeOfQuadrature::FILON,TypeOfQuadrature::GAUSS_KRONROD).build_exponential_intervals(omega_min, omega_max, N);
+    Br.reserve(omegas.size());
+    Ma.reserve(omegas.size());
     for (auto omega:omegas) Br.push_back(test_data::analytical_Br(omega));
     for (auto omega:omegas) Ma.push_back(compute_Ma_from_K(omega, A, test_data::analytical_K, yaml.tau_min, yaml.tau_max));
     return std::shared_ptr<HDBParser>(new HDBParserForTests(omegas, Ma, Br, only_diagonal_terms));

@@ -4,6 +4,7 @@
 #include "mesh_manipulations.hpp"
 #include "2DMeshDisplay.hpp"
 #include "xdyn/exceptions/InternalErrorException.hpp"
+#include <memory>
 #include <ssc/macros/SerializeMapsSetsAndVectors.hpp>
 #include <algorithm> //std::all_of
 #include <numeric> //std::accumulate
@@ -17,7 +18,7 @@ Facet flip(Facet facet)
 }
 
 MeshIntersector::MeshIntersector(const VectorOfVectorOfPoints& mesh_, const bool check_orientation) :
- mesh(MeshPtr(new Mesh(MeshBuilder(mesh_, check_orientation).build())))
+ mesh(std::make_shared<Mesh>(MeshBuilder(mesh_, check_orientation).build()))
 ,all_relative_immersions()
 ,all_absolute_wave_elevations()
 ,all_absolute_immersions()
@@ -28,7 +29,7 @@ MeshIntersector::MeshIntersector(const VectorOfVectorOfPoints& mesh_, const bool
 ,need_to_update_closing_facet(true)
 {}
 
-MeshIntersector::MeshIntersector(const MeshPtr mesh_)
+MeshIntersector::MeshIntersector(const MeshPtr& mesh_)
         :mesh(mesh_)
         ,all_relative_immersions()
         ,all_absolute_wave_elevations()

@@ -15,6 +15,7 @@
 #include "xdyn/core/Body.hpp"
 #include "xdyn/hdb_interpolators/HydroDBParser.hpp"
 
+#include <memory>
 #include <ssc/macros.hpp>
 #include "xdyn/yaml_parser/parse_unit_value.hpp"
 #include <ssc/kinematics.hpp>
@@ -178,13 +179,15 @@ GRPCForceModel::Input GRPCForceModel::parse(const std::string& yaml)
 }
 
 GRPCForceModel::GRPCForceModel(const GRPCForceModel::Input& input, const std::string& body_name_, const EnvironmentAndFrames& env) :
-        GRPCForceModel(std::shared_ptr<GRPCForceModel::Impl>(new GRPCForceModel::Impl(input, env.rot.convention, body_name_)), body_name_, env)
+        GRPCForceModel(std::make_unique<GRPCForceModel::Impl>(input, env.rot.convention, body_name_), body_name_, env)
 {
 }
 
-GRPCForceModel::GRPCForceModel(const std::shared_ptr<Impl>& pimpl_, const std::string& body_name_, const EnvironmentAndFrames& env) :
+GRPCForceModel::~GRPCForceModel() = default;
+
+GRPCForceModel::GRPCForceModel(std::unique_ptr<Impl> pimpl_, const std::string& body_name_, const EnvironmentAndFrames& env) :
         ForceModel(pimpl_->get_input().name, pimpl_->get_commands(), pimpl_->get_transformation_to_model_frame(), body_name_, env),
-        pimpl(pimpl_)
+        pimpl(std::move(pimpl_))
 {
 }
 

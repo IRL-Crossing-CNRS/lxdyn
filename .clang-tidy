@@ -1,0 +1,26 @@
+# A check is off for good only when it is wrong for this code; a deliberate site carries NOLINT(<check>): <reason>.
+Checks:
+  - '-*'
+  - 'bugprone-*'
+  - 'performance-*'
+  - 'misc-throw-by-value-catch-by-reference'
+  - 'modernize-make-shared'
+  - 'modernize-make-unique'
+  - 'modernize-use-override'
+  - 'modernize-use-nullptr'
+  - 'modernize-use-using'
+  - 'google-explicit-constructor'
+
+  # Off for good.
+  - '-bugprone-easily-swappable-parameters'  # an API-design opinion, and noisy
+  - '-bugprone-switch-missing-default-case'  # a default: silences -Wswitch on a new enumerator
+  - '-performance-avoid-endl'                # the flush is sometimes wanted, and the cost is noise
+  - '-performance-enum-size'                 # bytes saved per enum, not a defect
+
+WarningsAsErrors: '*'
+# Third-party headers arrive through -isystem and stay quiet; these are the rest that are not ours.
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '(/\.zig-cache/|/external/|/ssc/f2c/|/ssc/json/rapidjson/|/xdyn_wrapper_fmi/fmi2/)'
+CheckOptions:
+  # Allocation failure ends in std::terminate wherever it surfaces.
+  bugprone-exception-escape.IgnoredExceptions: 'bad_alloc,bad_array_new_length,length_error'

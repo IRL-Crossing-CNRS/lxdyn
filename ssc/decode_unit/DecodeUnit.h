@@ -54,8 +54,8 @@
 // A good start would be to compare outputs with UNIX or CYGWIN /bin/units
 //
 
-#ifndef __DECODE_UNIT__
-#define __DECODE_UNIT__
+#ifndef DECODEUNIT_H_
+#define DECODEUNIT_H_
 
 #include <string>
 #include <istream>
@@ -111,61 +111,61 @@ namespace ssc
                 {
                     std::string m_word;
                     public :
-                        WordToken(std::string word);
-                        virtual ~WordToken();
-                        virtual e_token_type type();
-                        virtual std::string description();
-                        virtual std::string string_value();
+                        explicit WordToken(std::string word);
+                        ~WordToken() override;
+                        e_token_type type() override;
+                        std::string description() override;
+                        std::string string_value() override;
                 };
 
                 class IntToken : public Token
                 {
                     int m_num;
                     public :
-                        IntToken(int num);
-                        virtual ~IntToken();
-                        virtual e_token_type type();
-                        virtual std::string description();
-                        virtual int    int_value();
-                        virtual double double_value();
+                        explicit IntToken(int num);
+                        ~IntToken() override;
+                        e_token_type type() override;
+                        std::string description() override;
+                        int    int_value() override;
+                        double double_value() override;
                 };
                 class DoubleToken : public Token {
                     double m_num;
                 public :
-                    DoubleToken(double num);
-                    virtual ~DoubleToken();
-                    virtual e_token_type type();
-                    virtual std::string description();
-                    virtual double double_value();
+                    explicit DoubleToken(double num);
+                    ~DoubleToken() override;
+                    e_token_type type() override;
+                    std::string description() override;
+                    double double_value() override;
                 };
 
                 class OperationToken : public Token
                 {
                     int m_op;
                     public :
-                        OperationToken(char op);
-                        virtual ~OperationToken();
-                        virtual e_token_type type();
-                        virtual std::string description();
-                        virtual int int_value();
+                        explicit OperationToken(char op);
+                        ~OperationToken() override;
+                        e_token_type type() override;
+                        std::string description() override;
+                        int int_value() override;
                 };
 
                 class LeftParToken : public Token
                 {
                     public :
                         LeftParToken();
-                        virtual ~LeftParToken();
-                        virtual e_token_type type();
-                        virtual std::string description();
+                        ~LeftParToken() override;
+                        e_token_type type() override;
+                        std::string description() override;
                 };
 
                 class RightParToken : public Token
                 {
                     public :
                         RightParToken();
-                        virtual ~RightParToken();
-                        virtual e_token_type type();
-                        virtual std::string description();
+                        ~RightParToken() override;
+                        e_token_type type() override;
+                        std::string description() override;
                 };
 
             private :
@@ -208,25 +208,25 @@ namespace ssc
                 static std::map<std::string,double> get_base_units_for_bootstrapping();
                 static std::vector<e_char_type> get_char_table();
                 static std::map<std::string,double> get_known_units();
-                static void extend_with_short_metric_prefix(std::map<std::string,double> &units, std::string unit );
-                static void extend_with_long_metric_prefix(std::map<std::string,double> &units, std::string unit );
-                static void extend_with_short_metric_prefix(std::map<std::string,double> &units, std::string unit , double value );
-                static void extend_with_long_metric_prefix(std::map<std::string,double> &units, std::string unit , double value );
+                static void extend_with_short_metric_prefix(std::map<std::string,double> &units, const std::string& unit );
+                static void extend_with_long_metric_prefix(std::map<std::string,double> &units, const std::string& unit );
+                static void extend_with_short_metric_prefix(std::map<std::string,double> &units, const std::string& unit , double value );
+                static void extend_with_long_metric_prefix(std::map<std::string,double> &units, const std::string& unit , double value );
                 UnitDecoder();
                 UnitDecoder(const UnitDecoder& rhs);
                 UnitDecoder& operator=(const UnitDecoder& rhs);
             public :
-                UnitDecoder(std::string unit);
-                UnitDecoder(std::string unit , std::map<std::string,double> &known_units);
+                explicit UnitDecoder(const std::string& unit);
+                UnitDecoder(const std::string& unit , std::map<std::string,double> &known_units);
                 ~UnitDecoder();
                 double decode();
         };
 
         // main function to decode units
-        double decodeUnit( std::string unit );
-        double decodeUnit( std::string unit , std::map<std::string,double> &known_units );
+        double decodeUnit( const std::string& unit );
+        double decodeUnit( const std::string& unit , std::map<std::string,double> &known_units );
 
     }
 }
 
-#endif // __DECODE_UNIT__
+#endif // DECODEUNIT_H_

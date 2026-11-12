@@ -16,15 +16,15 @@ public:
     struct Input : public WindMeanVelocityProfile::Input
     {
         Input();
-        Input(const WindMeanVelocityProfile::Input& parent);
+        explicit Input(const WindMeanVelocityProfile::Input& parent);
         double alpha;
         double z_ref;
     };
 
-    PowerLawWindVelocityProfile(const Input& input);
-    virtual ~PowerLawWindVelocityProfile();
+    explicit PowerLawWindVelocityProfile(const Input& input);
+    ~PowerLawWindVelocityProfile() override;
 
-    virtual double get_wind_velocity(const double z) const override;
+    double get_wind_velocity(const double z) const override;
     static std::string model_name();
     static Input parse(const std::string& yaml_input);
 

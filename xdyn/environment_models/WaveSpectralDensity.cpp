@@ -33,7 +33,7 @@ std::vector<double> WaveSpectralDensity::get_angular_frequencies(const double om
                                                                  const size_t n,         //!< Number of angular frequencies to return
                                                                  const bool equal_energy_bins,      //!< Choose omegas so the integral of S between two successive omegas is constant
                                                                  const bool periodic,               //!< Pick frequencies whose wavelength divides the repetition size
-                                                                 const std::vector<double> sizes    //!< Repetition sizes in metres, largest first
+                                                                 const std::vector<double>& sizes    //!< Repetition sizes in metres, largest first
                                                                 ) const
 {
     if (std::isinf(omega_min))
@@ -82,7 +82,7 @@ std::vector<double> WaveSpectralDensity::get_angular_frequencies(const double om
     {
         if (sizes.empty())
         {
-            THROW(__PRETTY_FUNCTION__, InvalidInputException, "Space-periodic waves need at least one repetition size.")
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "Space-periodic waves need at least one repetition size.");
         }
         // Deep-water dispersion omega^2 = g*k with k = 2*i*pi/L: an integer number of wavelengths
         // fits the repetition size L, which is what makes the field repeat along that axis.

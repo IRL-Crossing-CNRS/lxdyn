@@ -15,6 +15,7 @@
 #include "xdyn/test_data_generator/TriMeshTestData.hpp"
 #include "xdyn/yaml_parser/parse_output.hpp"
 
+#include <memory>
 #include <ssc/solver/steppers.hpp>
 #include <ssc/websocket.hpp>
 
@@ -22,14 +23,14 @@
 
 #define ADDRESS "127.0.0.1"
 #define WEBSOCKET_ADDRESS "ws://" ADDRESS
-#define WEBSOCKET_PORT    1234
+constexpr int WEBSOCKET_PORT = 1234;
 
 struct ListOfStringMessages : public ssc::websocket::MessageHandler
 {
     ListOfStringMessages() : messages()
     {
     }
-    void operator()(const ssc::websocket::Message& msg)
+    void operator()(const ssc::websocket::Message& msg) override
     {
         messages.push_back(msg.get_payload());
     }
@@ -57,7 +58,7 @@ TEST_F(ObserverTests, can_observe_using_a_websocket)
 {
 //! [ObserverTests example]
     ListOfStringMessages handler;
-    std::shared_ptr<ssc::websocket::Server> w(new ssc::websocket::Server(handler, WEBSOCKET_PORT));
+    std::shared_ptr<ssc::websocket::Server> w = std::make_shared<ssc::websocket::Server>(handler, WEBSOCKET_PORT);
     {
         const auto yaml = test_data::oscillating_cube_example();
         const auto mesh = test_data::cube();

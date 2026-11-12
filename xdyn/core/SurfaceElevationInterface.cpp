@@ -7,6 +7,7 @@
 
 #include "SurfaceElevationInterface.hpp"
 #include "xdyn/exceptions/InternalErrorException.hpp"
+#include <memory>
 #include <ssc/exception_handling.hpp>
 #include <string>
 
@@ -186,7 +187,7 @@ std::vector<double> SurfaceElevationInterface::get_dynamic_pressure(
     {
         THROW(__PRETTY_FUNCTION__, InternalErrorException,
             "Error when calculating dynamic pressure: the vector of positions of points P and the vector of their corresponding wave elevations don't have the same size (size of P: "
-                << n << ", size of eta: " << eta.size() << ")")
+                << n << ", size of eta: " << eta.size() << ")");
     }
     const ssc::kinematics::PointMatrix OP = compute_position_in_NED_frame(P, k);
     std::vector<double> x(n), y(n), z(n);
@@ -203,7 +204,7 @@ ssc::kinematics::PointMatrixPtr SurfaceElevationInterface::get_output_mesh_in_NE
     ) const
 {
     using namespace ssc::kinematics;
-    return PointMatrixPtr(new PointMatrix(compute_position_in_NED_frame(*output_mesh,k)));
+    return std::make_shared<PointMatrix>(compute_position_in_NED_frame(*output_mesh,k));
 }
 
 ssc::kinematics::PointMatrix SurfaceElevationInterface::get_waves_on_mesh(

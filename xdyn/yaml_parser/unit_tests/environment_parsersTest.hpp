@@ -17,31 +17,31 @@ class environment_parsersTest : public ::testing::Test
 {
     protected:
         environment_parsersTest();
-        virtual ~environment_parsersTest(){}
-        virtual void SetUp(){}
-        virtual void TearDown(){}
+        ~environment_parsersTest() override{}
+        void SetUp() override{}
+        void TearDown() override{}
         ssc::random_data_generator::DataGenerator a;
-        static const YamlWaveModel yaml;
+        const YamlWaveModel& yaml;
 };
 
 class environment_parsers_from_list_of_rays_Test : public ::testing::Test
 {
     protected:
         environment_parsers_from_list_of_rays_Test();
-        virtual ~environment_parsers_from_list_of_rays_Test(){}
-        virtual void SetUp(){}
-        virtual void TearDown(){}
+        ~environment_parsers_from_list_of_rays_Test() override{}
+        void SetUp() override{}
+        void TearDown() override{}
         ssc::random_data_generator::DataGenerator a;
-        static const YamlWaveModel yaml;
+        const YamlWaveModel& yaml;
 };
 
 class environment_parsers_from_external_list_of_rays_Test : public ::testing::Test
 {
     protected:
         environment_parsers_from_external_list_of_rays_Test(){}
-        virtual ~environment_parsers_from_external_list_of_rays_Test(){}
-        virtual void SetUp(){}
-        virtual void TearDown(){}
+        ~environment_parsers_from_external_list_of_rays_Test() override{}
+        void SetUp() override{}
+        void TearDown() override{}
 };
 
 #endif  /* ENVIRONMENT_PARSERSTEST_HPP_ */

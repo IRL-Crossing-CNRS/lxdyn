@@ -1,12 +1,13 @@
 #include "Hdf5WaveObserver.hpp"
 #include "Hdf5WaveObserverBuilder.hpp"
+#include <memory>
 #include <vector>
 #include "eigen3-hdf5.hpp"
 
 class Hdf5WaveObserver::Impl
 {
     public:
-        Impl(const Hdf5WaveObserverBuilder& builder):
+        explicit Impl(const Hdf5WaveObserverBuilder& builder):
             h5File(builder.get_h5File()),
             group(builder.get_group()),
             h5ElementT(builder.get_h5ElementT()),
@@ -136,14 +137,16 @@ void Hdf5WaveObserver::Impl::write(const SurfaceElevationGrid& waveElevationGrid
 
 Hdf5WaveObserver::Hdf5WaveObserver(
         const H5::H5File& h5File, const std::string& datasetName, const size_t nx, const size_t ny):
-                pimpl(std::shared_ptr<Hdf5WaveObserver::Impl>(new Hdf5WaveObserver::Impl(Hdf5WaveObserverBuilder(h5File, datasetName, nx, ny))))
+                pimpl(std::make_unique<Hdf5WaveObserver::Impl>(Hdf5WaveObserverBuilder(h5File, datasetName, nx, ny)))
 {
 }
+
+Hdf5WaveObserver::~Hdf5WaveObserver() = default;
 
 Hdf5WaveObserver::Hdf5WaveObserver(
         const std::string& fileName, const std::string& datasetName,
         const std::size_t nx, const std::size_t ny):
-                pimpl(std::shared_ptr<Hdf5WaveObserver::Impl>(new Hdf5WaveObserver::Impl(Hdf5WaveObserverBuilder(fileName, datasetName, nx, ny))))
+                pimpl(std::make_unique<Hdf5WaveObserver::Impl>(Hdf5WaveObserverBuilder(fileName, datasetName, nx, ny)))
 {
 }
 

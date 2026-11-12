@@ -10,14 +10,13 @@
 #include "ssc/kinematics/rotation_matrix_builders.hpp"
 #include "ssc/kinematics/EulerAngles.hpp"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #ifndef M_PI
 #define M_PI (4*atan(1.))
 #endif
 #define PI M_PI
 
-#define EPS (1E-10)
+constexpr double EPS = 1E-10;
 
 using namespace ssc::kinematics;
 

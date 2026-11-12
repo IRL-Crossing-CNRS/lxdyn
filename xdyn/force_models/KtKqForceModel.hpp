@@ -23,20 +23,21 @@ class KtKqForceModel : public AbstractWageningen
     public:
         struct Yaml : public AbstractWageningen::Yaml
         {
-            Yaml(const AbstractWageningen::Yaml& y);
+            explicit Yaml(const AbstractWageningen::Yaml& y);
             std::vector<double> J;
             std::vector<double> Kt;
             std::vector<double> Kq;
         };
         KtKqForceModel(const Yaml& input, const std::string& body_name, const EnvironmentAndFrames& env);
+        ~KtKqForceModel() override;
         static Yaml parse(const std::string& yaml);
 
-        double get_Kt(const std::map<std::string,double>& commands, const double J) const;
-        double get_Kq(const std::map<std::string,double>& commands, const double J) const;
+        double get_Kt(const std::map<std::string,double>& commands, const double J) const override;
+        double get_Kq(const std::map<std::string,double>& commands, const double J) const override;
 
         static std::string model_name();
     private:
         class Impl;
-        std::shared_ptr<Impl> pimpl;
+        std::unique_ptr<Impl> pimpl;
 };
 #endif /* KTKQFORCEMODEL_HPP_ */

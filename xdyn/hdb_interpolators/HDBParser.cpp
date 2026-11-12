@@ -22,7 +22,6 @@
 #include <set>
 #include <sstream>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -46,7 +45,7 @@ class HDBParser::Impl
         {
         }
 
-        Impl(const std::string& data)
+        explicit Impl(const std::string& data)
         : omega_rad()
         , tree(hdb::parse(data))
         , M()
@@ -239,13 +238,13 @@ class HDBParser::Impl
             RAOData ret;
             bool found_relevant_rao_section = false;
             bool found_relevant_rao_subsection = false;
-            for (auto ms:tree.lists_of_matrix_sections_with_id)
+            for (const auto& ms:tree.lists_of_matrix_sections_with_id)
             {
                 if (ms.header == section_name)
                 {
                     found_relevant_rao_section = true;
                     size_t psi_idx = 0;
-                    for (auto s:ms.sections_with_id)
+                    for (const auto& s:ms.sections_with_id)
                     {
                         if (boost::algorithm::starts_with(s.header, subsection_name))
                         {
@@ -269,7 +268,6 @@ class HDBParser::Impl
                     }
                 }
             }
-            std::stringstream error_msg;
             if (not(found_relevant_rao_section))
             {
                 return std::string("Unable to find section '") + section_name + "' in the RAO file.";
@@ -588,6 +586,7 @@ class HDBParser::Impl
         std::vector<double> get_Tp(const TimestampedMatrices& M)
         {
             std::vector<double> ret;
+            ret.reserve(M.size());
             for (size_t k = 0 ; k < M.size() ; ++k) ret.push_back(M.at(k).first);
             return ret;
         }
@@ -595,6 +594,7 @@ class HDBParser::Impl
         std::vector<double> get_Mij_for_each_Tp(const TimestampedMatrices& M, const size_t i, const size_t j)
         {
             std::vector<double> ret;
+            ret.reserve(M.size());
             for (size_t k = 0 ; k < M.size() ; ++k) ret.push_back(M.at(k).second.at(i).at(j));
             return ret;
         }
@@ -625,6 +625,9 @@ HDBParser::HDBParser() : pimpl(new Impl())
 HDBParser::~HDBParser()
 {
 }
+
+HDBParser::HDBParser(HDBParser&&) noexcept = default;
+HDBParser& HDBParser::operator=(HDBParser&&) noexcept = default;
 
 double HDBParser::get_forward_speed() const
 {

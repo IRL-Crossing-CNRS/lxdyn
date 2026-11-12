@@ -5,10 +5,9 @@
  *      Author: cady
  */
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
-#define EPS (1E-10)
+constexpr double EPS = 1E-10;
 
 #include "discretizeTest.hpp"
 #include "xdyn/environment_models/discretize.hpp"

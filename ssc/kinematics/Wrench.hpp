@@ -15,7 +15,7 @@ namespace ssc
     namespace kinematics
     {
         class Transform;
-        typedef Eigen::Matrix<double, 6, 1> Vector6d;
+        using Vector6d = Eigen::Matrix<double, 6, 1>;
         /** \author cec
          *  \date 24 avr. 2014, 12:35:30
          *  \brief Stores a force & a torque, projected in a given reference frame.
@@ -30,13 +30,13 @@ namespace ssc
             public:
                 Wrench();
                 virtual ~Wrench() {}
-                Wrench(const Point& P);
+                explicit Wrench(const Point& P);
                 Wrench(const Point& P, const Vector6d& v);
                 Wrench(const Point& P, const Eigen::Vector3d& force, const Eigen::Vector3d& torque);
                 Wrench(const Wrench& rhs);
 
                 Wrench& operator=(Wrench rhs);
-                void swap(Wrench& other);
+                void swap(Wrench& other) noexcept;
 
                 /**  \author cec
                  *  \date Apr 28, 2014, 3:40:27 PM

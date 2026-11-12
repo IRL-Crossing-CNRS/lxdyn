@@ -119,7 +119,6 @@ TEST_F(StlReaderTest, stl_less_than_84_bytes_with_keyword_and_invalid_binary_siz
 {
     // STL data less than 84 bytes long, with endsolid and solid, size != 84+50n should be
     // considered ASCII.
-    const std::string garbage = random_string_of_size(25);
     const std::string spaces(a.random<size_t>().between(1,25), ' ');
     const std::string data = random_string_of_size(25) + "solid" +  random_string_of_size(25) + "endsolid" + spaces;
     ASSERT_EQ(StlType::ASCII, identify_stl(data));
@@ -129,7 +128,6 @@ TEST_F(StlReaderTest, stl_less_than_84_bytes_without_endsolid_and_invalid_binary
 {
     // STL data less than 84 bytes long, with endsolid and solid,
     // size != 84+50n should be considered ASCII.
-    const std::string garbage = random_string_of_size(25);
     const std::string spaces(a.random<size_t>().between(1,25), ' ');
     const std::string data = random_string_of_size(25) + "solid" +  random_string_of_size(25) + spaces;
     ASSERT_THROW(identify_stl(data), MeshException);
@@ -185,4 +183,11 @@ TEST_F(StlReaderTest, should_ignore_solid_and_endsolid_if_within_header)
 TEST_F(StlReaderTest, should_be_able_to_read_a_binary_cube)
 {
     const VectorOfVectorOfPoints facets = read_stl(test_data::binary_stl());
+}
+
+TEST_F(StlReaderTest, binary_size_counts_triangles_beyond_127)
+{
+    std::string data(84 + 50 * 200, '\0');
+    data[80] = static_cast<char>(200);
+    ASSERT_EQ(StlType::BINARY, identify_stl(data));
 }

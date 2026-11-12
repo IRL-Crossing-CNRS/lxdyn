@@ -31,14 +31,14 @@ template <typename T> struct XY
     T y;
 };
 
-#define X_CANVAS_SIZE 30
-#define Y_CANVAS_SIZE 15
+constexpr int X_CANVAS_SIZE = 30;
+constexpr int Y_CANVAS_SIZE = 15;
 #define DOT_CHAR '*'
 #define POINT_CHAR 'X'
 
 XY<Range> get_min_max(const Eigen::Matrix3Xd& M);
 Eigen::Matrix3Xi convert(const Eigen::Matrix3Xd& M);
-typedef std::vector<XY<int> > Line;
+using Line = std::vector<XY<int> >;
 std::vector<Line> make_lines(const Eigen::Matrix3Xi& mesh, const ClosingFacetComputer::ListOfEdges& edges);
 std::vector<std::string> make_mesh(const Eigen::Matrix3Xi& M, const std::vector<Line>& lines, const std::set<size_t>& idx_to_display);
 std::ostream& operator<<(std::ostream& os, const TestMesh& mesh);

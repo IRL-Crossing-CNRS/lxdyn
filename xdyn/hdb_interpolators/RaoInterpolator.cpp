@@ -2,7 +2,6 @@
 #include "HydroDBParser.hpp"
 #include "xdyn/exceptions/InternalErrorException.hpp"
 #include "xdyn/external_data_structures/YamlRAO.hpp"
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -31,12 +30,12 @@ RaoInterpolator::RAO RaoInterpolator::RAO::for_froude_krylov(const HydroDBParser
                parser.get_froude_krylov_phase_psis());
 }
 
-RaoInterpolator::RAO::RAO(const std::array<std::vector<std::vector<double> >,6 > module_tables_,
-    const std::array<std::vector<std::vector<double> >,6 > phase_tables_,
-    const std::vector<double> module_periods_,
-    const std::vector<double> phase_periods_,
-    const std::vector<double> module_incidence_,
-    const std::vector<double> phase_incidence_)
+RaoInterpolator::RAO::RAO(const std::array<std::vector<std::vector<double> >,6 >& module_tables_,
+    const std::array<std::vector<std::vector<double> >,6 >& phase_tables_,
+    const std::vector<double>& module_periods_,
+    const std::vector<double>& phase_periods_,
+    const std::vector<double>& module_incidence_,
+    const std::vector<double>& phase_incidence_)
     : module_tables(module_tables_)
     , phase_tables(phase_tables_)
     , module_periods(module_periods_)
@@ -84,9 +83,9 @@ RaoInterpolator::RaoInterpolator(
         module.at(i) = Interpolator(rao.module_periods, rao.module_incidence, rao.module_tables.at(i));
         phase.at(i) = Interpolator(rao.phase_periods, rao.phase_incidence, rao.phase_tables.at(i));
     }
-    if (yaml_rao.use_encounter_period.is_initialized())
+    if (yaml_rao.use_encounter_period.has_value())
     {
-        use_encounter_period = yaml_rao.use_encounter_period.get();
+        use_encounter_period = yaml_rao.use_encounter_period.value();
     }
 }
 

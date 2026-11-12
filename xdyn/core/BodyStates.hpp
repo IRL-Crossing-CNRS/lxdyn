@@ -9,7 +9,7 @@
 #define BODYSTATES_HPP_
 
 #include "StatesFilter.hpp"
-#include "StateMacros.hpp"
+#include "StateLayout.hpp"
 #include "xdyn/external_data_structures/GeometricTypes3d.hpp"
 #include "xdyn/external_data_structures/YamlRotation.hpp"
 #include "xdyn/external_data_structures/AbstractStates.hpp"
@@ -25,21 +25,21 @@
 #include <tuple>
 
 class Mesh;
-typedef std::shared_ptr<Mesh> MeshPtr;
-typedef Eigen::Matrix<double,6,6> Matrix66;
+using MeshPtr = std::shared_ptr<Mesh>;
+using Matrix66 = Eigen::Matrix<double,6,6>;
 
 struct BodyStates : AbstractStates<History>
 {
-    BodyStates(
+    explicit BodyStates(
         const double Tmax=0 //!< Defines how much history we store
         );
-    BodyStates(
+    explicit BodyStates(
         const YamlFilteredStates& filtered_states, const double Tmax=0 //!< Defines how much history we store
         );
-    BodyStates(
+    explicit BodyStates(
         const StatesFilter& states_filter, const double Tmax=0 //!< Defines how much history we store
         );
-    BodyStates& operator=(const AbstractStates<History>& rhs);
+    using AbstractStates<History>::operator=;
     std::string name;                                              //!< Body's name
     ssc::kinematics::Point G;                                      //!< Position of the ship's centre of gravity
     MeshPtr mesh;                                                  //!< Vertices & edges of the body's mesh

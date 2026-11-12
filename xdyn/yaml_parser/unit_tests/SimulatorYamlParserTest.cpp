@@ -23,10 +23,19 @@
 
 using namespace testing; // So we can use 'ElementsAre' unqualified
 
-const YamlSimulatorInput SimulatorYamlParserTest::yaml = SimulatorYamlParser(test_data::full_example_with_propulsion()).parse();
-const YamlSimulatorInput SimulatorYamlParserTest::old_yaml = SimulatorYamlParser(test_data::full_example_with_propulsion_and_old_key_name()).parse();
+static const YamlSimulatorInput& shared_yaml()
+{
+    static const YamlSimulatorInput ret = SimulatorYamlParser(test_data::full_example_with_propulsion()).parse();
+    return ret;
+}
 
-SimulatorYamlParserTest::SimulatorYamlParserTest() : a(ssc::random_data_generator::DataGenerator(1212))
+static const YamlSimulatorInput& shared_old_yaml()
+{
+    static const YamlSimulatorInput ret = SimulatorYamlParser(test_data::full_example_with_propulsion_and_old_key_name()).parse();
+    return ret;
+}
+
+SimulatorYamlParserTest::SimulatorYamlParserTest() : a(ssc::random_data_generator::DataGenerator(1212)), yaml(shared_yaml()), old_yaml(shared_old_yaml())
 {
 }
 
@@ -66,8 +75,7 @@ TEST_F(SimulatorYamlParserTest, can_parse_environmental_constants)
     ASSERT_DOUBLE_EQ(9.81, yaml.environmental_constants.g);
     ASSERT_DOUBLE_EQ(1000, yaml.environmental_constants.rho);
     ASSERT_DOUBLE_EQ(1.18e-6, yaml.environmental_constants.nu);
-    ASSERT_TRUE(yaml.environmental_constants.rho_air.is_initialized());
-    ASSERT_DOUBLE_EQ(1.225, yaml.environmental_constants.rho_air.get());
+    ASSERT_THAT(yaml.environmental_constants.rho_air, Optional(DoubleEq(1.225)));
 }
 
 TEST_F(SimulatorYamlParserTest, can_parse_external_forces)

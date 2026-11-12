@@ -24,7 +24,7 @@
 class History
 {
     public:
-        History(const double Tmax=0 //!< Max. history length (in seconds): anything older than that will be forgotten (i.e. how far back in the past should we be able to go before defaulting to zero)
+        explicit History(const double Tmax=0 //!< Max. history length (in seconds): anything older than that will be forgotten (i.e. how far back in the past should we be able to go before defaulting to zero)
                 );
 
         /**  \brief Returns the average value integrated between t-length and t, t being the current instant.
@@ -80,8 +80,8 @@ class History
         double get_current_time() const;
 
     private:
-        typedef std::pair<double,double> TimeValue;
-        typedef std::vector<TimeValue> Container;
+        using TimeValue = std::pair<double,double>;
+        using Container = std::vector<TimeValue>;
 
         void throw_if_already_added(const size_t idx, const double t, const double val) const;
         size_t find_braketing_position(const double t) const;
@@ -99,7 +99,7 @@ class History
         double oldest_recorded_instant;
 
     public:
-        History(const Container& L); // For testing purposes only
+        explicit History(const Container& L); // For testing purposes only
 };
 
 std::ostream& operator<<(std::ostream& os, const History& h);

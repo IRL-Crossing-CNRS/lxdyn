@@ -8,7 +8,7 @@
 class Wrench
 {
 public:
-    Wrench(const ssc::kinematics::Wrench& rhs);
+    explicit Wrench(const ssc::kinematics::Wrench& rhs);
     Wrench(const ssc::kinematics::Point& P, const std::string& frame);
     Wrench(const ssc::kinematics::Point& P, const std::string& frame, const ssc::kinematics::Vector6d& v);
     Wrench(const ssc::kinematics::Point& P, const std::string& frame, const Eigen::Vector3d& force, const Eigen::Vector3d& torque);
@@ -38,12 +38,12 @@ public:
     void change_frame(const std::string& new_frame, const ssc::kinematics::RotationMatrix& R);
     void change_frame(const std::string& new_frame, const ssc::kinematics::KinematicsPtr& k);
     void transport_to(const ssc::kinematics::Point& P, const ssc::kinematics::KinematicsPtr& k);
-    void change_point_and_frame(const ssc::kinematics::Point& P, const std::string new_frame, const ssc::kinematics::KinematicsPtr& k);
+    void change_point_and_frame(const ssc::kinematics::Point& P, const std::string& new_frame, const ssc::kinematics::KinematicsPtr& k);
 
     Wrench change_frame(const std::string& new_frame, const ssc::kinematics::RotationMatrix& R) const;
     Wrench change_frame(const std::string& new_frame, const ssc::kinematics::KinematicsPtr& k) const;
     Wrench transport_to(const ssc::kinematics::Point& P, const ssc::kinematics::KinematicsPtr& k) const;
-    Wrench change_point_and_frame(const ssc::kinematics::Point& P, const std::string new_frame, const ssc::kinematics::KinematicsPtr& k) const;
+    Wrench change_point_and_frame(const ssc::kinematics::Point& P, const std::string& new_frame, const ssc::kinematics::KinematicsPtr& k) const;
 
     void add(const Wrench& other, const ssc::kinematics::KinematicsPtr& k);
     Wrench add(const Wrench& other, const ssc::kinematics::KinematicsPtr& k) const;

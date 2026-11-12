@@ -8,15 +8,16 @@
 #include "ssc/interpolation/PiecewiseConstantVariableStep.hpp"
 #include "ssc/interpolation/SplineVariableStep.hpp"
 #include "ssc/interpolation/SplinesException.hpp"
+#include <memory>
 #include <sstream>
 #include <list>
 #include <algorithm> //std::sort
 
 using namespace ssc::interpolation;
 
-typedef long int integer;
-typedef float real;
-typedef double doublereal;
+using integer = long int;
+using real = float;
+using doublereal = double;
 
 extern "C"
 {
@@ -122,6 +123,7 @@ class SplineVariableStep::Impl
         void sort_xs(const std::vector<double>& x_, const std::vector<double>& y_)
         {
             std::vector<size_t> idx;
+            idx.reserve(n);
             for (size_t i = 0 ; i < n ; ++i) idx.push_back(i);
             std::sort(idx.begin(), idx.end(), [&x_](const size_t i, const size_t j)->bool{return x_[i] < x_[j];});
             for (size_t i = 0 ; i < n ; ++i)
@@ -160,14 +162,18 @@ std::vector<double> sort(std::vector<double> v)
     return v;
 }
 
-SplineVariableStep::SplineVariableStep() : VariableStepInterpolation(std::vector<double>()), pimpl(std::shared_ptr<Impl>(new Impl()))
+SplineVariableStep::SplineVariableStep() : VariableStepInterpolation(std::vector<double>()), pimpl(std::make_unique<Impl>())
 {
 
 }
 
+SplineVariableStep::~SplineVariableStep() = default;
+SplineVariableStep::SplineVariableStep(SplineVariableStep&&) noexcept = default;
+SplineVariableStep& SplineVariableStep::operator=(SplineVariableStep&&) noexcept = default;
+
 SplineVariableStep::SplineVariableStep(const std::vector<double>& x, const std::vector<double>& y, const bool allow_queries_outside_bounds) :
         VariableStepInterpolation(sort(x), allow_queries_outside_bounds),
-        pimpl(std::shared_ptr<Impl>(new Impl(x,y)))
+        pimpl(std::make_unique<Impl>(x,y))
 {
 }
 

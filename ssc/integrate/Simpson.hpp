@@ -33,12 +33,13 @@ namespace ssc
         {
             public:
                 Simpson();
-                Simpson(const Function& f);
+                explicit Simpson(const Function& f);
+                ~Simpson() override;
 
             private:
                 class Impl;
-                std::shared_ptr<Impl> pimpl;
-                double integrate_impl(const Function& f, double a, double b, double eps=1e-6);
+                std::unique_ptr<Impl> pimpl;
+                double integrate_impl(const Function& f, double a, double b, double eps=1e-6) override;
         };
     }
 }

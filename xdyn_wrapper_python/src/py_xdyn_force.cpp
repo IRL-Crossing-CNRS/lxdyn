@@ -36,6 +36,7 @@
 #include "ssc/data_source/DataSource.hpp"
 #include "ssc/kinematics/Point.hpp"
 #include "ssc/kinematics/Wrench.hpp"
+#include <memory>
 #include <string>
 #include <memory>
 
@@ -661,7 +662,7 @@ void py_add_module_xdyn_force(py::module& m0)
         .def("get_wrench",
             static_cast<ssc::kinematics::Vector6d (RudderForceModel::RudderModel::*)(
                 const double /*rudder_angle*/,  //!< Rudder angle (in radian): positive if rudder on port side
-                ssc::kinematics::Point /*Vs*/,  //!< Speed of the ship relative to the fluid (in m/s)
+                const ssc::kinematics::Point& /*Vs*/,  //!< Speed of the ship relative to the fluid (in m/s)
                 const double /*area*/           //!< Rudder area (in or outside wake) in m^2
                 ) const>(&RudderForceModel::RudderModel::get_wrench),
             py::arg("rudder_angle"),
@@ -739,7 +740,7 @@ void py_add_module_xdyn_force(py::module& m0)
                 const std::vector<double>& Br,
                 const bool only_diagonal_terms)
             {
-                a.parser.reset(new HDBParserForTests(omega, Ma, Br, only_diagonal_terms));
+                a.parser = std::make_shared<HDBParserForTests>(omega, Ma, Br, only_diagonal_terms);
             },
             py::arg("omega"),
             py::arg("Ma"),

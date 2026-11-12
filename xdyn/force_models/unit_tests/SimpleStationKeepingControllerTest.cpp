@@ -10,11 +10,10 @@
 #include "SimpleStationKeepingController.hpp"
 #include "xdyn/test_data_generator/yaml_data.hpp"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-#define EPS 1E-14
+constexpr double EPS = 1E-14;
 
 SimpleStationKeepingControllerTest::SimpleStationKeepingControllerTest() : a(ssc::random_data_generator::DataGenerator(85552))
 {

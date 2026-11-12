@@ -18,13 +18,18 @@
 #include "xdyn/test_data_generator/TriMeshTestData.hpp"
 #include "xdyn/test_data_generator/yaml_data.hpp"
 #include "xdyn/yaml_parser/SimulatorYamlParser.hpp"
+#include <memory>
 #include <ssc/kinematics.hpp>
 #include <cmath>
 
-const YamlSimulatorInput SimulatorBuilderTest::input = SimulatorYamlParser(test_data::full_example()).parse();
+static const YamlSimulatorInput& shared_input()
+{
+    static const YamlSimulatorInput ret = SimulatorYamlParser(test_data::full_example()).parse();
+    return ret;
+}
 
 
-SimulatorBuilderTest::SimulatorBuilderTest() : a(ssc::random_data_generator::DataGenerator(1212)),
+SimulatorBuilderTest::SimulatorBuilderTest() : a(ssc::random_data_generator::DataGenerator(1212)), input(shared_input()),
                                                builder(SimulatorBuilder(input, 0))
 {
 }
@@ -89,9 +94,9 @@ TEST_F(SimulatorBuilderTest, kinematics_contains_body_to_mesh_transform)
     builder.can_parse<DefaultWindModel>();
     const auto bodies = get_body_vector(a.random<std::string>());
 
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     builder.add_initial_transforms(bodies,k);
-    ASSERT_TRUE(k.get() != NULL);
+    ASSERT_TRUE(k.get() != nullptr);
     for (auto that_body = bodies.begin() ; that_body != bodies.end() ; ++that_body)
     {
         ASSERT_NO_THROW(k->get((*that_body)->get_name(), customize((*that_body)->get_name(), "mesh")));
@@ -103,9 +108,9 @@ TEST_F(SimulatorBuilderTest, kinematics_contains_ned_to_body_transform)
     builder.can_parse<DefaultSurfaceElevation>();
     builder.can_parse<DefaultWindModel>();
     const auto bodies = get_body_vector(a.random<std::string>());
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     builder.add_initial_transforms(bodies,k);
-    ASSERT_TRUE(k.get() != NULL);
+    ASSERT_TRUE(k.get() != nullptr);
     for (auto that_body = bodies.begin() ; that_body != bodies.end() ; ++that_body)
     {
         ASSERT_NO_THROW(k->get("NED", (*that_body)->get_name()));

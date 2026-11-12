@@ -1,5 +1,5 @@
-#ifndef __EXCEPTIONHANDLING__
-#define __EXCEPTIONHANDLING__
+#ifndef EXCEPTIONHANDLING_HPP_
+#define EXCEPTIONHANDLING_HPP_
 
 #include <string>
 #include <exception>
@@ -15,9 +15,9 @@ namespace ssc
                 Exception(const std::string& message, const std::string& file, const std::string& function, const unsigned int line);
                 Exception(const Exception& rhs);
 
-                ~Exception () throw ();
+                ~Exception () throw () override;
 
-                virtual const char* what() const throw();
+                const char* what() const throw() override;
                 std::string get_message() const;
 
             private:
@@ -31,10 +31,11 @@ namespace ssc
 
 #define QUOTEME_(x) #x
 #define QUOTEME(x) QUOTEME_(x)
-#define THROW(function,exception, message)\
-    std::stringstream __ss;\
-    __ss << message;\
-    exception exc(__ss.str(), __FILE__, function, __LINE__);\
-    throw exc;
+#define THROW(function, exception, message)\
+    do {\
+        std::stringstream ssc_throw_message;\
+        ssc_throw_message << message; /* NOLINT(bugprone-macro-parentheses): message is a << chain */\
+        throw exception(ssc_throw_message.str(), __FILE__, function, __LINE__);\
+    } while (false)
 #endif
 

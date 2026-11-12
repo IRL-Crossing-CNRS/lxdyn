@@ -41,7 +41,7 @@ These are documented upstream: [falling ball](https://gitlab.com/sirehna_naval_g
 
 ## Development
 
-You need [Nix](https://nixos.org/download/) with flakes enabled (`experimental-features = nix-command flakes` in `~/.config/nix/nix.conf`). The devShell provides zig, mise, uv and the rest of the tools, and no host compiler is used. With [direnv](https://direnv.net/), `direnv allow` replaces `nix develop`.
+You need [Nix](https://nixos.org/download/) with flakes enabled (`experimental-features = nix-command flakes` in `~/.config/nix/nix.conf`). The devShell provides zig, mise, uv and the rest of the tools, and no host compiler is used. With [direnv](https://direnv.net/), `direnv allow` replaces `nix develop`. Every `mise run` stops outside the devShell, so no host tool stands in for a pinned one.
 
 ```bash
 git clone https://github.com/naval-group/lxdyn.git && cd lxdyn
@@ -49,6 +49,8 @@ nix develop
 mise run bootstrap             # protoc + the prebuilt C++ dependencies, ~35 MB
 mise run zig:build             # binaries in build/x86_64-linux-gnu/bin
 ```
+
+`mise run zig:build` also writes `compile_commands.json` at the root, which clangd reads; the devShell's clangd matches zig's clang.
 
 The C++ dependencies (Boost, gRPC, HDF5, yaml-cpp, GoogleTest) are prebuilt against zig's libc++ rather than taken from the host. `nix develop .#deps` builds them from source instead, which takes a few hours.
 
@@ -66,6 +68,7 @@ zig build test                 # unit tests
 mise run integration           # CLI scenarios
 mise run integration:grpc      # gRPC and JSON protocol scenarios
 mise run python:test           # Python bindings
+mise run tidy                  # clang-tidy, with the checks .clang-tidy lists
 mise run cross                 # cross targets under qemu and wine, in `nix develop .#cross`
 nix flake check                # everything CI runs
 ```

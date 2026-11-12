@@ -35,6 +35,7 @@ namespace ssc
         {
             public:
                 Kinematics();
+                ~Kinematics();
 
                 /** \author cec
                   *  \date 23 avr. 2014, 10:45:40
@@ -58,10 +59,10 @@ namespace ssc
 
             private:
                 class Impl;
-                std::shared_ptr<Impl> pimpl;
+                std::unique_ptr<Impl> pimpl;
         };
 
-        typedef std::shared_ptr<Kinematics> KinematicsPtr;
+        using KinematicsPtr = std::shared_ptr<Kinematics>;
     }
 }
 

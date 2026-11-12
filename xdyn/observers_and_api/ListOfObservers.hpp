@@ -15,8 +15,8 @@ struct YamlOutput;
 class ListOfObservers
 {
     public:
-        ListOfObservers(const std::vector<YamlOutput>& yaml);
-        ListOfObservers(const std::vector<ObserverPtr>& observers);
+        explicit ListOfObservers(const std::vector<YamlOutput>& yaml);
+        explicit ListOfObservers(const std::vector<ObserverPtr>& observers);
         void check_variables_to_serialize_are_available() const;
         void observe_before_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems);
         void observe_after_solver_step(const Sim& sys, const double t, const std::vector<std::shared_ptr<ssc::solver::DiscreteSystem> >& discrete_systems);
@@ -32,7 +32,7 @@ class ListOfObservers
                 const T& val,
                 const DataAddressing& address)
         {
-            for (auto observer:observers)
+            for (const auto& observer:observers)
             {
                 observer->write_before_solver_step(val, address);
             }
@@ -42,7 +42,7 @@ class ListOfObservers
                 const T& val,
                 const DataAddressing& address)
         {
-            for (auto observer:observers)
+            for (const auto& observer:observers)
             {
                 observer->write_after_solver_step(val, address);
             }
@@ -52,7 +52,7 @@ class ListOfObservers
                         const T& val,
                         const DataAddressing& address)
         {
-            for (auto observer:observers)
+            for (const auto& observer:observers)
             {
                 observer->write_before_simulation(val, address);
             }

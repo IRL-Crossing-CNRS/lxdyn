@@ -30,7 +30,7 @@
 #include <memory>
 
 #include "xdyn/external_data_structures/YamlBody.hpp"
-#include "xdyn/core/StateMacros.hpp"
+#include "xdyn/core/StateLayout.hpp"
 
 std::ostream& operator<<(std::ostream& os, const BlockableState& s);
 
@@ -46,8 +46,8 @@ class BlockedDOF
          *
          * That information is contained in the 'input' data
          * */
-        BlockedDOF(const YamlBlockedDOF& input, const size_t body_idx=0);
-        BlockedDOF(const std::string& input, const size_t body_idx=0);
+        explicit BlockedDOF(const YamlBlockedDOF& input, const size_t body_idx=0);
+        explicit BlockedDOF(const std::string& input, const size_t body_idx=0);
 
         /** \brief Update states taking into accoung forcing
          *  \details This method replaces forced states in x by forced values. The forced values are calculated according to the method defined
@@ -76,7 +76,7 @@ class BlockedDOF
          *  \param sum_of_other_forces sum of forces excluding the forcing force
          *  \returns The forcing force (6 components, at COG, in body reference frame)
         */
-        typedef Eigen::Matrix<double,6,1> Vector;
+        using Vector = Eigen::Matrix<double,6,1>;
         Vector get_delta_F(const StateType& dx_dt, const Eigen::Matrix<double,6,6>& total_inertia, const ssc::kinematics::Wrench& sum_of_other_forces) const;
 
         /** \brief Get the k derivative of forced positions at current time

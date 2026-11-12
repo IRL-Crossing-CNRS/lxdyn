@@ -25,10 +25,7 @@ struct Server::Impl
 
 
 
-typedef std::function<void(WSServer* , websocketpp::connection_hdl, message_ptr )> InternalMessageHandler;
-
-using std::placeholders::_1;
-using std::placeholders::_2;
+using InternalMessageHandler = std::function<void(WSServer* , websocketpp::connection_hdl, message_ptr )>;
 
 void create_server(WSServer& server, const short unsigned int port, const InternalMessageHandler& message_handler, const bool verbose);
 
@@ -52,7 +49,7 @@ Server::Server(MessageHandler& message_handler, const short unsigned int port, c
 
 struct DoNothing : public MessageHandler
 {
-    void operator()(const Message&){}
+    void operator()(const Message&) override{}
 };
 
 Server::Server(const short unsigned int port, const bool verbose) : pimpl(new Impl())
@@ -83,7 +80,7 @@ void create_server(WSServer& server, const short unsigned int port, const Intern
         // Initialize ASIO
         server.init_asio();
         // Register our message handler
-        server.set_message_handler(std::bind(message_handler,&server,::_1,::_2));
+        server.set_message_handler(std::bind(message_handler,&server,std::placeholders::_1,std::placeholders::_2));
         // Listen on port
         server.listen(port);
         // Start the server accept loop

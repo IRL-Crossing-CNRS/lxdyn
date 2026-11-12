@@ -8,7 +8,7 @@
 
 #define ADDRESS "127.0.0.1"
 #define WEBSOCKET_ADDRESS "ws://" ADDRESS
-#define WEBSOCKET_PORT    9002
+constexpr int WEBSOCKET_PORT = 9002;
 
 using namespace ssc::websocket;
 
@@ -17,7 +17,7 @@ struct ListOfStringMessages : public MessageHandler
     ListOfStringMessages() : messages()
     {
     }
-    void operator()(const Message& msg)
+    void operator()(const Message& msg) override
     {
         messages.push_back(msg.get_payload());
     }
@@ -30,7 +30,7 @@ struct ListOfDoubleMessages : public MessageHandler
     ListOfDoubleMessages() : messages()
     {
     }
-    void operator()(const Message& msg)
+    void operator()(const Message& msg) override
     {
         const auto v = msg.get_binary_payload<double>();
         messages.insert(messages.end(), v.begin(), v.end());
@@ -41,7 +41,7 @@ struct ListOfDoubleMessages : public MessageHandler
 
 TEST_F(WebSocketObserverTest, WebSocketEndpoint_should_be_able_to_connect_a_web_socket_server)
 {
-    std::shared_ptr<Server> w(new Server(WEBSOCKET_PORT));
+    std::shared_ptr<Server> w = std::make_shared<Server>(WEBSOCKET_PORT);
     {
         Client endpoint(WEBSOCKET_ADDRESS, WEBSOCKET_PORT);
         ASSERT_TRUE(endpoint.good());
@@ -54,7 +54,7 @@ TEST_F(WebSocketObserverTest, WebSocketEndpoint_should_be_able_to_send_a_string)
     const std::string s2 = a.random<std::string>();
     const std::string s3 = a.random<std::string>();
     ListOfStringMessages message_handler;
-    std::shared_ptr<Server> w(new Server(message_handler, WEBSOCKET_PORT));
+    std::shared_ptr<Server> w = std::make_shared<Server>(message_handler, WEBSOCKET_PORT);
     { // Creating a scope ensures that the message is actually sent at the end of the scope
         Client endpoint(WEBSOCKET_ADDRESS, WEBSOCKET_PORT);
         endpoint.send_text(s1);
@@ -70,7 +70,7 @@ TEST_F(WebSocketObserverTest, WebSocketEndpoint_should_be_able_to_send_a_string)
 TEST_F(WebSocketObserverTest, WebSocketEndpoint_should_be_able_to_send_a_vector_doubles)
 {
     ListOfDoubleMessages message_handler;
-    std::shared_ptr<Server> w(new Server(message_handler, WEBSOCKET_PORT));
+    std::shared_ptr<Server> w = std::make_shared<Server>(message_handler, WEBSOCKET_PORT);
     {
         std::vector<double> v(3,0.0);
         v[0]=1.0;v[1]=2.0;v[2]=3.0;

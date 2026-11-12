@@ -1,6 +1,7 @@
 #include "HydroPolarForceModelTest.hpp"
 #include "HydroPolarForceModel.hpp"
 #include "xdyn/core/yaml2eigen.hpp"
+#include "gmock/gmock.h"
 #include <cmath>
 
 HydroPolarForceModelTest::HydroPolarForceModelTest()
@@ -51,8 +52,8 @@ TEST_F(HydroPolarForceModelTest, can_parse)
         ASSERT_DOUBLE_EQ(input.lift_coefficient.at(i), Cl.at(i));
         ASSERT_DOUBLE_EQ(input.drag_coefficient.at(i), Cd.at(i));
     }
-    ASSERT_FALSE(input.moment_coefficient.is_initialized());
-    ASSERT_FALSE(input.chord_length.is_initialized());
+    ASSERT_FALSE(input.moment_coefficient.has_value());
+    ASSERT_FALSE(input.chord_length.has_value());
 }
 
 TEST_F(HydroPolarForceModelTest, can_parse_optional_output)
@@ -63,16 +64,16 @@ TEST_F(HydroPolarForceModelTest, can_parse_optional_output)
           "chord length: {value: 5, unit: m}\n" <<
           "angle command: beta";
     const HydroPolarForceModel::Input input = HydroPolarForceModel::parse(get_yaml_input()+ss.str());
-    ASSERT_TRUE(input.moment_coefficient.is_initialized());
-    ASSERT_TRUE(input.chord_length.is_initialized());
+    ASSERT_TRUE(input.moment_coefficient.has_value());
+    const std::vector<double> moment_coefficient = input.moment_coefficient.value_or(std::vector<double>());
+    ASSERT_TRUE(input.chord_length.has_value());
     const std::vector<double> Cm = {0.03448,0.01724,0.01466,0.01466,0.02586,0.11302,0.38250,0.96888,1.31578,1.34483};
-    ASSERT_EQ(input.moment_coefficient.get().size(), 10);
+    ASSERT_EQ(moment_coefficient.size(), 10);
     for (size_t i=0 ; i<10 ; i++)
     {
-        ASSERT_DOUBLE_EQ(input.moment_coefficient.get().at(i), Cm.at(i));
+        ASSERT_DOUBLE_EQ(moment_coefficient.at(i), Cm.at(i));
     }
-    ASSERT_TRUE(input.angle_command);
-    ASSERT_EQ(input.angle_command.get(), "beta");
+    ASSERT_THAT(input.angle_command, testing::Optional(std::string("beta")));
 }
 
 
@@ -226,7 +227,7 @@ TEST_F(HydroPolarForceModelTest, should_print_warning_for_polar_input_with_unexp
     input.angle_of_attack = {0.,0.12217305,0.15707963,0.20943951,0.48869219,1.04719755,1.57079633,2.0943951,2.61799388,M_PI,3*M_PI/2};
     input.lift_coefficient = {0.00000,0.94828,1.13793,1.25000,1.42681,1.38319,1.26724,0.93103,0.38793,-0.11207,-0.11207};
     input.drag_coefficient = {0.03448,0.01724,0.01466,0.01466,0.02586,0.11302,0.38250,0.96888,1.31578,1.34483,1.34483};
-    HydroPolarForceModel(input, "body", env);
+    EXPECT_NO_THROW(HydroPolarForceModel(input, "body", env));
     ASSERT_FALSE(debug.str().empty());
 
     // Reset the stderr stringstream
@@ -238,7 +239,7 @@ TEST_F(HydroPolarForceModelTest, should_print_warning_for_polar_input_with_unexp
     input.angle_of_attack = {-M_PI/2,0.,0.12217305,0.15707963,0.20943951,0.48869219,1.04719755,1.57079633,2.0943951,2.61799388, M_PI};
     input.lift_coefficient = {0.00000,0.00000,0.94828,1.13793,1.25000,1.42681,1.38319,1.26724,0.93103,0.38793,-0.11207};
     input.drag_coefficient = {0.03448,0.03448,0.01724,0.01466,0.01466,0.02586,0.11302,0.38250,0.96888,1.31578,1.34483};
-    HydroPolarForceModel(input, "body", env);
+    EXPECT_NO_THROW(HydroPolarForceModel(input, "body", env));
     ASSERT_FALSE(debug.str().empty());
 
     // Reset the stderr stringstream
@@ -250,7 +251,7 @@ TEST_F(HydroPolarForceModelTest, should_print_warning_for_polar_input_with_unexp
     input.angle_of_attack = {-3*M_PI/2,-M_PI/2,0.,0.12217305,0.15707963,0.20943951,0.48869219,1.04719755,1.57079633,2.0943951,2.61799388, M_PI};
     input.lift_coefficient = {0.00000,0.00000,0.00000,0.94828,1.13793,1.25000,1.42681,1.38319,1.26724,0.93103,0.38793,-0.11207};
     input.drag_coefficient = {0.03448,0.03448,0.03448,0.01724,0.01466,0.01466,0.02586,0.11302,0.38250,0.96888,1.31578,1.34483};
-    HydroPolarForceModel(input, "body", env);
+    EXPECT_NO_THROW(HydroPolarForceModel(input, "body", env));
     ASSERT_FALSE(debug.str().empty());
 
     // Restore cerr's buffer

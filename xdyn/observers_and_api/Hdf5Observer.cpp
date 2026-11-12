@@ -1,4 +1,6 @@
 #include "Hdf5Observer.hpp"
+
+#include <memory>
 #include "Hdf5WaveObserver.hpp"
 #include "Hdf5WaveSpectrumObserver.hpp"
 #include "xdyn/exceptions/InternalErrorException.hpp"
@@ -97,7 +99,7 @@ std::function<void()> Hdf5Observer::get_initializer(const SurfaceElevationGrid& 
            {
                const size_t nx = (size_t)waveElevationGrid.x.size();
                const size_t ny = (size_t)waveElevationGrid.y.size();
-               wave_serializer = Hdf5WaveObserverPtr(new Hdf5WaveObserver(h5File, this->basename+"/waves", nx, ny));
+               wave_serializer = std::make_shared<Hdf5WaveObserver>(h5File, this->basename+"/waves", nx, ny);
            };
 }
 
@@ -169,7 +171,7 @@ void Hdf5Observer::write_python_script_before_simulation()
     }
 }
 
-void Hdf5Observer::write_before_simulation(const MeshPtr mesh, const DataAddressing& address)
+void Hdf5Observer::write_before_simulation(const MeshPtr& mesh, const DataAddressing& address)
 {
     if (should_serialize("mesh"))
     {

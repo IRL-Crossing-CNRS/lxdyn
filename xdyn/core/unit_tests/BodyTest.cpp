@@ -12,12 +12,17 @@
 #include "State.hpp"
 #include "xdyn/test_data_generator/yaml_data.hpp"
 #include "xdyn/yaml_parser/SimulatorYamlParser.hpp"
-#define _USE_MATH_DEFINE
 #include <cmath>
+#include <memory>
 #define PI M_PI
-#define EPS (1E-10)
 
-BodyTest::BodyTest() : a(ssc::random_data_generator::DataGenerator(21212))
+static const BodyPtr& shared_body()
+{
+    static const BodyPtr ret = BodyBuilderTest::build_body(1);
+    return ret;
+}
+
+BodyTest::BodyTest() : a(ssc::random_data_generator::DataGenerator(21212)), body(shared_body())
 {
 }
 
@@ -32,8 +37,6 @@ void BodyTest::SetUp()
 void BodyTest::TearDown()
 {
 }
-
-const BodyPtr BodyTest::body = BodyBuilderTest::build_body(1);
 
 TEST_F(BodyTest, frame_of_origin_point_is_correct)
 {
@@ -120,7 +123,7 @@ TEST_F(BodyTest, can_get_transform_from_NED_to_body_from_states)
 
 TEST_F(BodyTest, can_update_Kinematics_object_from_states)
 {
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     const StateType x = {1,2,3,4,5,6,7,8,9,10,11,12,13,1,2,3,4,5,6,7,8,9,3,5,7,13};
     BodyPtr b(body);
     b->update_kinematics(x, k);
@@ -147,7 +150,7 @@ TEST_F(BodyTest, can_update_Kinematics_object_from_states)
 
 TEST_F(BodyTest, can_compute_transform_from_ned_to_local_ned)
 {
-    ssc::kinematics::KinematicsPtr k(new ssc::kinematics::Kinematics());
+    ssc::kinematics::KinematicsPtr k = std::make_shared<ssc::kinematics::Kinematics>();
     const StateType x = {1,2,3,4,5,6,7,8,9,10,11,12,13,1,2,3,4,5,6,7,8,9,3,5,7,13};
     BodyPtr b(body);
     b->update_kinematics(x, k);
@@ -208,7 +211,7 @@ TEST_F(BodyTest, forced_state_derivatives_are_taken_into_account)
     const double t = 2.1;
     body->calculate_state_derivatives(sum_of_other_forces, x, dx_dt, t, env);
 
-    ASSERT_DOUBLE_EQ(1./4.2, dx_dt[UIDX(1)]);
+    ASSERT_DOUBLE_EQ(1./4.2, dx_dt[state::index(1, state::U)]);
 }
 
 TEST_F(BodyTest, can_overwrite_history_with_single_value)

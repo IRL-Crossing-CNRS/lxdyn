@@ -42,11 +42,11 @@ class AbstractLineGetter
 template <typename T> class LineGetter : public AbstractLineGetter
 {
   public:
-    LineGetter(const std::string& s) : stream(s)
+    explicit LineGetter(const std::string& s) : stream(s)
     {}
 
-    virtual ~LineGetter() {}
-    std::string get_next_line()
+    ~LineGetter() override {}
+    std::string get_next_line() override
     {
         std::string normalized_line;
         std::string original_line;
@@ -63,7 +63,7 @@ template <typename T> class LineGetter : public AbstractLineGetter
         }
         return normalized_line;
     }
-    bool has_more_lines() const
+    bool has_more_lines() const override
     {
         return not(stream.eof());
     }
@@ -75,7 +75,7 @@ template <typename T> class LineGetter : public AbstractLineGetter
 class GetLineFromString : public LineGetter<std::istringstream>
 {
   public:
-    GetLineFromString(const std::string& s)
+    explicit GetLineFromString(const std::string& s)
         : LineGetter<std::istringstream>(s)
     {
     }
@@ -84,7 +84,7 @@ class GetLineFromString : public LineGetter<std::istringstream>
 class GetLineFromFile : public LineGetter<std::ifstream>
 {
   public:
-    GetLineFromFile(const std::string& s)
+    explicit GetLineFromFile(const std::string& s)
         : LineGetter<std::ifstream>(s)
     {
         if (not(stream))
@@ -100,7 +100,7 @@ class GetLineFromFile : public LineGetter<std::ifstream>
 class Parser
 {
   public:
-    Parser(AbstractLineGetter& line_getter_)
+    explicit Parser(AbstractLineGetter& line_getter_)
         : line_getter(line_getter_)
         , current_section()
         , parsed_sections()
@@ -144,15 +144,7 @@ class Parser
                         {
                             double left = 0;
                             double right = 0;
-                            boost::trim(current_line);
-                            if (current_line.find(' ') != std::string::npos)
-                            {
-                                sscanf(current_line.c_str(), "%lf   %lf", &left, &right);
-                            }
-                            else
-                            {
-                                sscanf(current_line.c_str(), "%lf", &left);
-                            }
+                            std::istringstream(current_line) >> left >> right;
                             current_rao.left_column.push_back(left);
                             current_rao.right_column.push_back(right);
                         }
@@ -266,13 +258,10 @@ class Parser
                 }
                 else if (parsing_vector_key_value)
                 {
-                    try
+                    double value = 0;
+                    if (boost::conversion::try_lexical_convert(previous_token, value))
                     {
-                        append_value_to_current_vector_value(
-                            boost::lexical_cast<double>(previous_token));
-                    }
-                    catch (const std::exception&)
-                    {
+                        append_value_to_current_vector_value(value);
                     }
                 }
                 previous_token = "";
@@ -312,12 +301,10 @@ class Parser
             {
                 if (parsing_vector_key_value)
                 {
-                    try
+                    double value = 0;
+                    if (boost::conversion::try_lexical_convert(token, value))
                     {
-                        append_value_to_current_vector_value(boost::lexical_cast<double>(token));
-                    }
-                    catch (const std::exception&)
-                    {
+                        append_value_to_current_vector_value(value);
                     }
                 }
                 else
@@ -436,8 +423,8 @@ RAOAttributes::RAOAttributes()
 {
 }
 
-std::vector<std::string> rao_lexer(const std::string rao_attributes);
-std::vector<std::string> rao_lexer(const std::string rao_attributes)
+std::vector<std::string> rao_lexer(const std::string& rao_attributes);
+std::vector<std::string> rao_lexer(const std::string& rao_attributes)
 {
     std::vector<std::string> tokens;
     std::string buffer;
@@ -517,7 +504,7 @@ struct UnitValue
     }
 
   private:
-    UnitValue(const std::string& name_, const double value_, const std::string unit_)
+    UnitValue(const std::string& name_, const double value_, const std::string& unit_)
         : name(name_)
         , unit(unit_)
         , value(value_)
@@ -554,7 +541,6 @@ RAOAttributes analyze_rao_tokens(const std::vector<std::string>& tokens);
 RAOAttributes analyze_rao_tokens(const std::vector<std::string>& tokens)
 {
     RAOAttributes ret;
-    std::string token = "";
     size_t i = 0;
     std::string header = "";
     while (tokens[i] != ":" && i < tokens.size())
@@ -610,7 +596,7 @@ RAOAttributes analyze_rao_tokens(const std::vector<std::string>& tokens)
     return ret;
 }
 
-RAOAttributes parse_rao_attributes(const std::string rao_attributes)
+RAOAttributes parse_rao_attributes(const std::string& rao_attributes)
 {
     const std::vector<std::string> tokens = rao_lexer(rao_attributes);
     return analyze_rao_tokens(tokens);

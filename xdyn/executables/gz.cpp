@@ -15,7 +15,6 @@
 #include "boost_program_options_descriptions/OptionPrinter.hpp"
 #include <google/protobuf/stubs/common.h>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -103,7 +102,15 @@ int main(int argc, char** argv)
 {
     GZOptions input_data;
     ErrorReporter error_outputter;
-    const int error = get_gz_data(argc, argv, input_data, error_outputter);
+    int error = EXIT_FAILURE;
+    try
+    {
+        error = get_gz_data(argc, argv, input_data, error_outputter);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     if (not(error))
     {
         std::string yaml;

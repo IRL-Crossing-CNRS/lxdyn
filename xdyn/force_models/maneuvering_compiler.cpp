@@ -40,28 +40,29 @@ namespace maneuvering
             {
                 const std::string b = this->operator ()(d.base);
                 std::vector<std::string> exponents;
-                for (auto e:d.exponents) exponents.push_back(this->operator()(e));
+                exponents.reserve(d.exponents.size());
+                for (const auto& e:d.exponents) exponents.push_back(this->operator()(e));
                 std::string ret = b;
-                for (auto e:exponents) ret = std::string("(") + ret + ")^(" + e + ")";
+                for (const auto& e:exponents) ret.insert(0, "(").append(")^(").append(e).append(")");
                 return ret;
             }
             std::string operator()(const ::Term& d) const
             {
                 std::string ret = this->operator ()(d.first);
-                for (auto op:d.rest)
+                for (const auto& op:d.rest)
                 {
                     std::string val = this->operator()(op.factor);
-                    ret = ret + op.operator_ + "(" + val + ")";
+                    ret.append(op.operator_).append("(").append(val).append(")");
                 }
                 return ret;
             }
             std::string operator()(const ::Expr& d) const
             {
                 std::string ret = this->operator ()(d.first);
-                for (auto op:d.rest)
+                for (const auto& op:d.rest)
                 {
                     std::string val = this->operator()(op.term);
-                    ret = ret + op.operator_ + "(" + val + ")";
+                    ret.append(op.operator_).append("(").append(val).append(")");
                 }
                 return ret;
             }
@@ -78,7 +79,7 @@ namespace maneuvering
     class Evaluator: public boost::static_visitor<NodePtr>
     {
         public:
-            Evaluator(const YamlRotation& rot_) : rot(rot_) {}
+            explicit Evaluator(const YamlRotation& rot_) : rot(rot_) {}
             NodePtr operator()(const Nil& ) const
             {
                 return make_constant(std::nan(""));
@@ -100,15 +101,16 @@ namespace maneuvering
             {
                 const NodePtr b = this->operator ()(d.base);
                 std::vector<NodePtr> exponents;
-                for (auto e:d.exponents) exponents.push_back(this->operator()(e));
+                exponents.reserve(d.exponents.size());
+                for (const auto& e:d.exponents) exponents.push_back(this->operator()(e));
                 NodePtr ret = b;
-                for (auto e:exponents) ret = make_pow(ret, e);
+                for (const auto& e:exponents) ret = make_pow(ret, e);
                 return ret;
             }
             NodePtr operator()(const ::Term& d) const
             {
                 NodePtr ret = this->operator ()(d.first);
-                for (auto op:d.rest)
+                for (const auto& op:d.rest)
                 {
                     NodePtr val = this->operator()(op.factor);
                     if (op.operator_ == "-") ret = make_difference(ret,val);
@@ -121,7 +123,7 @@ namespace maneuvering
             NodePtr operator()(const ::Expr& d) const
             {
                 NodePtr ret = this->operator ()(d.first);
-                for (auto op:d.rest)
+                for (const auto& op:d.rest)
                 {
                     NodePtr val = this->operator()(op.term);
                     if (op.operator_ == "-") ret = make_difference(ret,val);

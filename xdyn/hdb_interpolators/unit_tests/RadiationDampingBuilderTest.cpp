@@ -14,11 +14,10 @@
 #include <ssc/integrate.hpp>
 #include <ssc/macros.hpp>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-#define EPS (1E-10)
+constexpr double EPS = 1E-10;
 
 RadiationDampingBuilderTest::RadiationDampingBuilderTest() : a(ssc::random_data_generator::DataGenerator(212))
 {
@@ -66,6 +65,7 @@ TEST_F(RadiationDampingBuilderTest, retardation_function_is_correct)
     const double omega_max = 850;//00;//2*PI/1;
     const size_t n = 10;
     std::vector<double> taus;
+    taus.reserve(n);
     for (size_t i = 0 ; i < n ; ++i) taus.push_back(2*PI/omega_max+2*PI*(1./omega_min-1./omega_max)*(double)i/((double)(n-1)));
     const auto K = builder.build_retardation_function(test_data::analytical_Br, taus, 0, omega_min, omega_max);
     size_t N = n;
@@ -277,6 +277,7 @@ TEST_F(RadiationDampingBuilderTest, retardation_function_should_closely_match_an
     RadiationDampingBuilder builder(TypeOfQuadrature::SIMPSON, TypeOfQuadrature::FILON);
     const auto omegas = builder.build_exponential_intervals(omega_min, omega_max, N);
 
+    vBr.reserve(omegas.size());
     for (auto omega:omegas) vBr.push_back(test_data::analytical_Br(omega));
     const auto Br_ = builder.build_interpolator(omegas,vBr);
 
@@ -293,6 +294,7 @@ TEST_F(RadiationDampingBuilderTest, LONG_retardation_function_should_closely_mat
     RadiationDampingBuilder builder(TypeOfQuadrature::GAUSS_KRONROD, TypeOfQuadrature::GAUSS_KRONROD);
     const auto omegas = builder.build_exponential_intervals(omega_min, omega_max, N);
 
+    vBr.reserve(omegas.size());
     for (auto omega:omegas) vBr.push_back(test_data::analytical_Br(omega));
     const auto Br_ = builder.build_interpolator(omegas,vBr);
 

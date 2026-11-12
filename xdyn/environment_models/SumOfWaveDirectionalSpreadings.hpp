@@ -25,13 +25,13 @@
 class SumOfWaveDirectionalSpreadings : public WaveDirectionalSpreading
 {
     public:
-        SumOfWaveDirectionalSpreadings(const WaveDirectionalSpreading& s);
+        explicit SumOfWaveDirectionalSpreadings(const WaveDirectionalSpreading& s);
         SumOfWaveDirectionalSpreadings(const WaveDirectionalSpreading& s1, const WaveDirectionalSpreading& s2);
-        SumOfWaveDirectionalSpreadings(const std::vector<WaveDirectionalSpreading>& s);
+        explicit SumOfWaveDirectionalSpreadings(const std::vector<WaveDirectionalSpreading>& s);
 
-        double operator()(const double psi) const;
-        WaveDirectionalSpreading* clone() const;
-        std::vector<double> get_directions(const size_t n, const bool periodic = false) const;
+        double operator()(const double psi) const override;
+        WaveDirectionalSpreading* clone() const override;
+        std::vector<double> get_directions(const size_t n, const bool periodic = false) const override;
 
     private:
         SumOfWaveDirectionalSpreadings(); // Disabled

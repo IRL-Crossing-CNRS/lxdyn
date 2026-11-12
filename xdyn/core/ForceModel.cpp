@@ -12,7 +12,6 @@
 #include "xdyn/exceptions/InternalErrorException.hpp"
 #include <ssc/data_source.hpp>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 #include <limits>
@@ -47,6 +46,7 @@ bool Memoization::is_cached(const double t, const std::vector<double>& states, c
 Wrench Memoization::run_if_not_cached(const BodyStates& states, const double t, const EnvironmentAndFrames& env, const std::map<std::string,double>& commands)
 {
     std::vector<double> current_command_values;
+    current_command_values.reserve(commands.size());
     for (const auto& kv:commands)
     {
         current_command_values.push_back(kv.second);
@@ -143,24 +143,19 @@ void ForceModel::can_find_internal_frame(const ssc::kinematics::KinematicsPtr& k
 {
     if (has_internal_frame)
     {
-        bool reference_frame_exists = false;
-        try
+        const auto transform_exists = [&](const std::string& from_frame)
         {
-            k->get(body_name, known_reference_frame);
-            reference_frame_exists = true;
-        }
-        catch (const ssc::kinematics::KinematicsException& e)
-        {
-        }
-        try
-        {
-            k->get("NED", known_reference_frame);
-            reference_frame_exists = true;
-        }
-        catch (const ssc::kinematics::KinematicsException& e)
-        {
-        }
-        if (not(reference_frame_exists))
+            try
+            {
+                k->get(from_frame, known_reference_frame);
+                return true;
+            }
+            catch (const ssc::kinematics::KinematicsException&)
+            {
+                return false;
+            }
+        };
+        if (not(transform_exists(body_name) or transform_exists("NED")))
         {
             THROW(__PRETTY_FUNCTION__, InvalidInputException, "When computing force model '" << name << "' we were unable to find frame '" << known_reference_frame << "' used as base frame of the frame in which the forces are expressed. Use 'NED' or '" << body_name << "' in the 'frame' section perhaps?");
         }

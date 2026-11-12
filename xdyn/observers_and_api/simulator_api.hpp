@@ -30,7 +30,7 @@ Sim get_system(const std::string& yaml, const std::string& mesh, const double t0
 Sim get_system(const YamlSimulatorInput& input, const std::map<std::string, VectorOfVectorOfPoints>& meshes, const double t0);
 EnvironmentAndFrames get_environment_for_wave_queries(const std::string& yaml);
 
-typedef std::function<void(std::vector<double>&, const double)> ForceStates;
+using ForceStates = std::function<void(std::vector<double>&, const double)>;
 
 template <typename StepperType> std::vector<Res> simulate(Sim& sys, const YamlSimulatorInput& input, ssc::solver::Scheduler& scheduler)
 {
@@ -38,7 +38,7 @@ template <typename StepperType> std::vector<Res> simulate(Sim& sys, const YamlSi
     const double tstart = scheduler.get_time();
     const auto controllers = get_initialized_controllers(tstart, input.controllers, input.commands, scheduler, sys);
     ssc::solver::quicksolve<StepperType>(sys, scheduler, observer, controllers);
-    auto ret = observer.get();
+    auto ret = observer.get_res();
     return ret;
 }
 

@@ -11,14 +11,14 @@
 #include "xdyn/exceptions/InvalidInputException.hpp"
 #include "xdyn/core/BodyBuilder.hpp"
 
-#define EPS 1E-2
-#define NB_TRIALS 100
+constexpr double EPS = 1E-2;
+constexpr int NB_TRIALS = 100;
 
-#define _USE_MATH_DEFINE
 #include <cmath>
+#include <memory>
 #define PI M_PI
 
-#define DEG2RAD (PI/180.)
+constexpr double DEG2RAD = PI/180.;
 
 #define BODY "body 1"
 
@@ -28,7 +28,7 @@ EnvironmentAndFrames get_env()
     EnvironmentAndFrames env;
     env.rho = 1024;
     env.rot = YamlRotation("angle", {"z","y'","x''"});
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), "mesh(" BODY ")"));
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), BODY));
     return env;

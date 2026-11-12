@@ -13,17 +13,17 @@
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 
-typedef websocketpp::client<websocketpp::config::asio_client> client;
+using client = websocketpp::client<websocketpp::config::asio_client>;
 
 class ConnectionMetadata
 {
     public:
-        typedef websocketpp::lib::shared_ptr<ConnectionMetadata> ptr;
+        using ptr = websocketpp::lib::shared_ptr<ConnectionMetadata>;
         ConnectionMetadata(int id, websocketpp::connection_hdl hdl, const std::string& uri);
         void on_open(client * c, websocketpp::connection_hdl hdl);
         void on_fail(client * c, websocketpp::connection_hdl hdl);
         void on_close(client * c, websocketpp::connection_hdl hdl);
-        void on_message(websocketpp::connection_hdl, client::message_ptr msg);
+        void on_message(const websocketpp::connection_hdl&, const client::message_ptr& msg);
         websocketpp::connection_hdl get_hdl() const;
         int get_id() const;
         std::string get_status() const;

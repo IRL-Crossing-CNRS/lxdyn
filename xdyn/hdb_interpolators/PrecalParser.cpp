@@ -4,10 +4,9 @@
 #include <ssc/decode_unit.hpp>
 #include <algorithm>
 #include <list>
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
-#define DEG2RAD (PI/180.)
+constexpr double DEG2RAD = PI/180.;
 
 PrecalParser PrecalParser::from_string(const std::string& precal_file_contents)
 {
@@ -197,8 +196,10 @@ Eigen::Matrix<double, 6, 6> PrecalParser::get_added_mass() const
     return Ma;
 }
 
-static std::function<bool(double, double)> double_eq
-    = [](double d1, double d2) { return fabs(d1 - d2) <= std::numeric_limits<double>::epsilon(); };
+static bool double_eq(double d1, double d2)
+{
+    return fabs(d1 - d2) <= std::numeric_limits<double>::epsilon();
+}
 
 bool rao_is_valid_and_corresponds_to_signal_and_direction(const RAO& rao,
                                                           const std::string& signal_name,

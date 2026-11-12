@@ -483,7 +483,7 @@ void H5_Tools::read(
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 1 or 2 rank data, not" << rank);
     }
     hsize_t dims_out[2];
-    const int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
+    const int ndims = dataspace.getSimpleExtentDims(dims_out, nullptr);
     if (!((ndims==1)||(ndims==2)))
     {
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 1 or 2 rank data, not" << ndims);
@@ -524,7 +524,7 @@ void H5_Tools::read(
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 1 or 2 rank data, not" << rank);
     }
     hsize_t dims_out[2];
-    const int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
+    const int ndims = dataspace.getSimpleExtentDims(dims_out, nullptr);
     if (!((ndims==1)||(ndims==2)))
     {
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 1 or 2 rank data, not" << ndims);
@@ -568,7 +568,7 @@ void H5_Tools::read(
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 2 rank data, not" << rank);
     }
     hsize_t dims_out[2];
-    const int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
+    const int ndims = dataspace.getSimpleExtentDims(dims_out, nullptr);
     if (ndims!=2)
     {
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 2 rank data, not" << ndims);
@@ -615,7 +615,7 @@ void H5_Tools::read(
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 3 rank data, not" << rank);
     }
     hsize_t dims_out[3];
-    const int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
+    const int ndims = dataspace.getSimpleExtentDims(dims_out, nullptr);
     if (ndims!=3)
     {
         THROW(__PRETTY_FUNCTION__, InternalErrorException, "One expects 3 rank data, not" << ndims);
@@ -626,6 +626,7 @@ void H5_Tools::read(
     for (hsize_t i=0; i<dims_out[0];++i)
     {
         std::vector<std::vector<double> > tmp;
+        tmp.reserve(dims_out[1]);
         for (hsize_t j=0; j<dims_out[1]; ++j)
         {
             tmp.push_back(std::vector<double>(p + i *dims_out[1] * dims_out[2] + j * dims_out[2],

@@ -14,6 +14,7 @@
 #include "xdyn/mesh/MeshIntersector.hpp"
 #include "xdyn/test_data_generator/TriMeshTestData.hpp"
 
+#include <memory>
 #include <ssc/kinematics.hpp>
 
 #define BODY "body 1"
@@ -39,7 +40,7 @@ EnvironmentAndFrames HydrostaticForceModelTest::get_environment_and_frames() con
     EnvironmentAndFrames env;
     env.g = 9.81;
     env.rho = 1024;
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), "mesh(" BODY ")"));
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), BODY));
     std::shared_ptr<ssc::kinematics::PointMatrix> mesh;
@@ -120,7 +121,7 @@ TEST_F(HydrostaticForceModelTest, DISABLED_oriented_fully_immerged_rectangle)
     EnvironmentAndFrames env;
     env.g = 9.81;
     env.rho = 1024;
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     const ssc::kinematics::Point G("NED",0,0,0);
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), "mesh(" BODY ")"));
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), BODY));
@@ -206,7 +207,7 @@ TEST_F(HydrostaticForceModelTest, potential_energy_half_immersed_cube_fast)
     EnvironmentAndFrames env;
     env.g = 9.81;
     env.rho = 1024;
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), "mesh(" BODY ")"));
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), BODY));
     std::shared_ptr<ssc::kinematics::PointMatrix> mesh;
@@ -214,8 +215,7 @@ TEST_F(HydrostaticForceModelTest, potential_energy_half_immersed_cube_fast)
 
     BodyStates states = get_body(BODY, unit_cube())->get_states();
     std::vector<double> x(13,0);
-    std::vector<double> dz;
-    for (size_t i = 0 ; i < 4 ; ++i) dz.push_back(0.5);
+    std::vector<double> dz(4, 0.5);
     for (size_t i = 0 ; i < 4 ; ++i) dz.push_back(-0.5);
     FastHydrostaticForceModel F(BODY, env);
     states.intersector->update_intersection_with_free_surface(dz,dz);
@@ -228,7 +228,7 @@ TEST_F(HydrostaticForceModelTest, potential_energy_half_immersed_cube_exact)
     EnvironmentAndFrames env;
     env.g = 9.81;
     env.rho = 1024;
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     const ssc::kinematics::Point G("NED",0,2,2./3.);
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), "mesh(" BODY ")"));
     env.k->add(ssc::kinematics::Transform(ssc::kinematics::Point("NED"), BODY));
@@ -237,8 +237,7 @@ TEST_F(HydrostaticForceModelTest, potential_energy_half_immersed_cube_exact)
 
     BodyStates states = get_body(BODY, unit_cube())->get_states();
     std::vector<double> x(13,0);
-    std::vector<double> dz;
-    for (size_t i = 0 ; i < 4 ; ++i) dz.push_back(0.5);
+    std::vector<double> dz(4, 0.5);
     for (size_t i = 0 ; i < 4 ; ++i) dz.push_back(-0.5);
     states.intersector->update_intersection_with_free_surface(dz,dz);
 

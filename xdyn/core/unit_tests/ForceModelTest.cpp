@@ -7,13 +7,14 @@
 #include "ForceModelTest.hpp"
 #include "ForceModel.hpp"
 #include "random_kinematics.hpp"
+#include <memory>
 #include <ssc/data_source.hpp>
 
 EnvironmentAndFrames make_env(ssc::random_data_generator::DataGenerator& a);
 EnvironmentAndFrames make_env(ssc::random_data_generator::DataGenerator& a)
 {
     EnvironmentAndFrames env;
-    env.k = ssc::kinematics::KinematicsPtr(new ssc::kinematics::Kinematics());
+    env.k = std::make_shared<ssc::kinematics::Kinematics>();
     const auto bTa = random_transform(a, "body", "mock");
     env.k->add(bTa);
     env.rot = YamlRotation("angle", {"z","y'","x''"});
@@ -33,7 +34,7 @@ class RandomForce : public ForceModel
             const BodyStates& /*states*/,
             const double /*t*/,
             const EnvironmentAndFrames& /*env*/,
-            const std::map<std::string,double>& /*commands*/) const
+            const std::map<std::string,double>& /*commands*/) const override
         {
             ssc::kinematics::Vector6d ret;
             ret(0) = a.random<double>().between(+2, +3);

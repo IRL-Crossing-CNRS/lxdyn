@@ -41,22 +41,22 @@ CSVLineByLineReader::CSVLineByLineReader(const CSVYaml& y)
 {
     if (yaml.path.empty())
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Cannot open CSV file because an empty file name was supplied.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Cannot open CSV file because an empty file name was supplied.");
     }
     if (not(file.is_open()))
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was not found.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was not found.");
     }
     if (not(file.good()))
     {
 
        if (file.bad() || file.fail())
         {
-            THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was found, but xdyn is unable to read it: " <<  std::strerror(errno) << ".")
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was found, but xdyn is unable to read it: " <<  std::strerror(errno) << ".");
         }
         if (file.eof())
         {
-            THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was found, but it looks empty.")
+            THROW(__PRETTY_FUNCTION__, InvalidInputException, "CSV file '" << yaml.path << "' was found, but it looks empty.");
         }
     }
     next = read_next_line();
@@ -189,13 +189,13 @@ CSVLineByLineReader::DateValues CSVLineByLineReader::read_next_line()
         const auto it = column_name_to_command_name.find(headers[i]);
         if (it != column_name_to_command_name.end())
         {
-            const double value = strtod(buffer.c_str(), NULL);
+            const double value = strtod(buffer.c_str(), nullptr);
             ret.values[it->second] = value;
             has_more_values = true;
         }
         if (headers[i] == yaml.time_column)
         {
-            ret.date = strtod(buffer.c_str(), NULL);
+            ret.date = strtod(buffer.c_str(), nullptr);
             if (date2position.find(ret.date)==date2position.end())
             {
                 if (max_date_so_far>=ret.date)
@@ -227,7 +227,7 @@ double CSVLineByLineReader::get_initial_date() const
 {
     if (date2position.empty())
     {
-        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Requesting initial date of an empty CSV file.")
+        THROW(__PRETTY_FUNCTION__, InvalidInputException, "Requesting initial date of an empty CSV file.");
     }
     return date2position.begin()->first;
 }

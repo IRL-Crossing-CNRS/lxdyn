@@ -20,7 +20,7 @@ struct Vector3dComparator
     }
 };
 
-typedef std::map<EPoint, size_t, Vector3dComparator> Vector3dMap;
+using Vector3dMap = std::map<EPoint, size_t, Vector3dComparator>;
 
 /**
  * \brief Contains an edge of a mesh
@@ -55,14 +55,14 @@ struct EdgeComparator
     }
 };
 
-typedef std::map<Edge, size_t, EdgeComparator> EdgeMap;
+using EdgeMap = std::map<Edge, size_t, EdgeComparator>;
 
 class MeshBuilder
 {
     public:
-        MeshBuilder(const VectorOfVectorOfPoints& v_, const bool check_orientation=true);
-        MeshBuilder(const VectorOfPoints& tri, const bool check_orientation=true);
-        MeshBuilder(const Matrix3x& tri);
+        explicit MeshBuilder(const VectorOfVectorOfPoints& v_, const bool check_orientation=true);
+        explicit MeshBuilder(const VectorOfPoints& tri, const bool check_orientation=true);
+        explicit MeshBuilder(const Matrix3x& tri);
         Mesh build();
         void operator()(const VectorOfPoints& Tri);
 

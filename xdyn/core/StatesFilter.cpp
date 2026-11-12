@@ -31,15 +31,15 @@ FilteredStates::FilteredStates(const StatesFilter& filters, const AbstractStates
 class MovingAverage : public StateFilter
 {
     public:
-        MovingAverage(const double duration_in_seconds_) : duration_in_seconds(duration_in_seconds_)
+        explicit MovingAverage(const double duration_in_seconds_) : duration_in_seconds(duration_in_seconds_)
         {}
 
-        double filter(const History& h) const
+        double filter(const History& h) const override
         {
             return h.average(duration_in_seconds);
         }
 
-        double get_Tmax() const
+        double get_Tmax() const override
         {
             return duration_in_seconds;
         }

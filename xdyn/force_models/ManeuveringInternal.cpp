@@ -58,7 +58,7 @@ double Constant::get_min() const
     return val;
 }
 
-Unary::Unary(const NodePtr operand) : Node({operand})
+Unary::Unary(const NodePtr& operand) : Node({operand})
 {
 }
 
@@ -769,7 +769,7 @@ namespace maneuvering
     void FindTmax::visit(const Binary& f)
     {
         auto children  = f.get_children();
-        for (auto child:children)
+        for (const auto& child:children)
         {
             child->accept(*this);
         }
@@ -777,7 +777,7 @@ namespace maneuvering
     void FindTmax::visit(const Unary& f)
     {
         auto children  = f.get_children();
-        for (auto child:children)
+        for (const auto& child:children)
         {
             child->accept(*this);
         }

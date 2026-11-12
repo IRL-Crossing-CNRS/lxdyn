@@ -11,19 +11,22 @@
 #include "xdyn/binary_stl_data/generate_test_ship.hpp"
 #include "xdyn/external_file_formats/stl_writer.hpp"
 #include "xdyn/exceptions/InvalidInputException.hpp"
-#include "xdyn/gz_curves/make_sim_for_GZ.cpp"
+#include "xdyn/gz_curves/make_sim_for_GZ.hpp"
 #include "xdyn/test_data_generator/stl_data.hpp"
 #include "xdyn/test_data_generator/yaml_data.hpp"
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
-Sim GZCurveTest::sim = GZ::make_sim(test_data::test_ship_hydrostatic_test("non-linear hydrostatic (exact)"), test_data::cube());
+static Sim& shared_sim()
+{
+    static Sim ret = GZ::make_sim(test_data::test_ship_hydrostatic_test("non-linear hydrostatic (exact)"), test_data::cube());
+    return ret;
+}
 
-#define EPS 1E-10
+constexpr double EPS = 1E-10;
 
-GZCurveTest::GZCurveTest() : a(ssc::random_data_generator::DataGenerator(54522))
+GZCurveTest::GZCurveTest() : a(ssc::random_data_generator::DataGenerator(54522)), sim(shared_sim())
 {
 }
 

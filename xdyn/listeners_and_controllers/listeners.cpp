@@ -15,6 +15,7 @@
 #include "xdyn/external_data_structures/YamlTimeSeries.hpp"
 #include "xdyn/yaml_parser/check_input_yaml.hpp"
 #include <boost/algorithm/string.hpp> // For boost::to_upper
+#include <memory>
 #include <ssc/macros.hpp>
 #include <memory>
 
@@ -22,7 +23,7 @@ void add_interpolation_table(const std::string& x_name, const std::vector<double
 void add_interpolation_table(const std::string& x_name, const std::vector<double>& x, const std::string& y_name, const std::vector<double>& y, ssc::data_source::DataSource& ds)
 {
     ds.check_in(__PRETTY_FUNCTION__);
-    std::shared_ptr<ssc::interpolation::LinearInterpolationVariableStep> I(new ssc::interpolation::LinearInterpolationVariableStep(x, y));
+    std::shared_ptr<ssc::interpolation::LinearInterpolationVariableStep> I = std::make_shared<ssc::interpolation::LinearInterpolationVariableStep>(x, y);
 
     const std::string module_name = x_name + "->" + y_name;
     InterpolationModule module(&ds, module_name, x_name, y_name, I);
@@ -112,7 +113,7 @@ Controller* build_controller(const double tstart, const YamlController& yaml_con
         return new CSVController(tstart, yaml_controller.name, yaml_controller.rest_of_the_yaml);
     }
     THROW(__PRETTY_FUNCTION__, InvalidInputException, "Controller type '" << yaml_controller.type << "' is unknown. Known controller types are: PID, GRPC, CSV");
-    return NULL;
+    return nullptr;
 }
 
 void check_no_controller_outputs_are_defined_in_a_command(
@@ -186,7 +187,7 @@ void initialize_controllers(
     )
 {
     system.set_discrete_state("t", scheduler.get_time());
-    for (auto controller:controllers)
+    for (const auto& controller:controllers)
     {
         controller->initialize(scheduler, system);
     }

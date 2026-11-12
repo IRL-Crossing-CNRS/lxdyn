@@ -16,11 +16,11 @@ class SimTest : public ::testing::Test
 {
     protected:
         SimTest();
-        virtual ~SimTest();
-        virtual void SetUp();
-        virtual void TearDown();
+        ~SimTest() override;
+        void SetUp() override;
+        void TearDown() override;
         ssc::random_data_generator::DataGenerator a;
-        static const VectorOfVectorOfPoints test_ship_stl;
+        const VectorOfVectorOfPoints& test_ship_stl;
 };
 
 #endif  /* SIMTEST_HPP_ */

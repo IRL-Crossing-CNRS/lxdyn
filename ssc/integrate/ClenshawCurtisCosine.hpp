@@ -17,12 +17,12 @@ namespace ssc
         class ClenshawCurtisCosine : public ClenshawCurtis
         {
             public:
-                ClenshawCurtisCosine(const double tau);
+                explicit ClenshawCurtisCosine(const double tau);
                 ClenshawCurtisCosine(const Function& f, const double tau);
 
             private:
                 ClenshawCurtisCosine();
-                int get_internal_type_number() const;
+                int get_internal_type_number() const override;
         };
     }
 }

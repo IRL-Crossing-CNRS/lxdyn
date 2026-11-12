@@ -21,7 +21,7 @@
 #include "BlockedDOF.hpp"
 #include "BodyStates.hpp"
 #include "StatesFilter.hpp"
-#include "StateMacros.hpp"
+#include "StateLayout.hpp"
 #include "State.hpp"
 
 #include <ssc/kinematics.hpp>
@@ -196,7 +196,7 @@ class Body
 
 };
 
-typedef std::shared_ptr<Body> BodyPtr;
+using BodyPtr = std::shared_ptr<Body>;
 
 #endif /* BODY_HPP_ */
 

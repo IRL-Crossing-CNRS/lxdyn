@@ -13,7 +13,7 @@
 
 #include "xdyn/environment_models/WaveSpectralDensity.hpp"
 
-typedef std::shared_ptr<WaveSpectralDensity> WaveSpectralDensityPtr;
+using WaveSpectralDensityPtr = std::shared_ptr<WaveSpectralDensity>;
 
 /** \brief Class returned when summing two WaveSpectralDensity objects
  *  \details
@@ -28,13 +28,13 @@ class SumOfWaveSpectralDensities : public WaveSpectralDensity
 {
     public:
         SumOfWaveSpectralDensities();
-        SumOfWaveSpectralDensities(const WaveSpectralDensity& w);
+        explicit SumOfWaveSpectralDensities(const WaveSpectralDensity& w);
         SumOfWaveSpectralDensities(const WaveSpectralDensity& w1, const WaveSpectralDensity& w2);
-        SumOfWaveSpectralDensities(const std::vector<WaveSpectralDensity>& ws);
+        explicit SumOfWaveSpectralDensities(const std::vector<WaveSpectralDensity>& ws);
         double operator()(const double omega //!< Angular frequency (\f$2\pi f\f$) in rad/s of the significant wave height
-                                  ) const;
+                                  ) const override;
 
-        WaveSpectralDensity* clone() const;
+        WaveSpectralDensity* clone() const override;
 
         /**  \brief Returns n angular frequencies between omega_min (included)
           *         and omega_max (also included)
@@ -45,8 +45,8 @@ class SumOfWaveSpectralDensities : public WaveSpectralDensity
                                                     const size_t n,         //!< Number of angular frequencies to return
                                                     const bool equal_energy_bins,      //!< Choose omegas so the integral of S between two successive omegas is constant
                                                     const bool periodic = false,        //!< Pick frequencies whose wavelength divides the repetition size
-                                                    const std::vector<double> sizes = {}//!< Repetition sizes in metres, largest first
-                                                    ) const;
+                                                    const std::vector<double>& sizes = {}//!< Repetition sizes in metres, largest first
+                                                    ) const override;
 
     private:
         std::vector<WaveSpectralDensityPtr> terms;

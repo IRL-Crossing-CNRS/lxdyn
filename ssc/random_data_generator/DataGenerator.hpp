@@ -1,8 +1,8 @@
 #ifndef DATAGENERATOR_HPP_
 #define DATAGENERATOR_HPP_
 
-#define GET_A_MIN_STRING_LENGTH 3
-#define GET_A_MAX_STRING_LENGTH 17
+constexpr int GET_A_MIN_STRING_LENGTH = 3;
+constexpr int GET_A_MAX_STRING_LENGTH = 17;
 
 #include <math.h> // For floor
 #include <stdlib.h> // For size_t
@@ -43,7 +43,7 @@ namespace ssc
                     return TypedSetDataGenerator<T>(*this);
                 }
 
-                DataGenerator(const size_t& seed);
+                explicit DataGenerator(const size_t& seed);
                 virtual ~DataGenerator(){}
 
                 virtual DataGenerator& no();
@@ -81,7 +81,7 @@ namespace ssc
         template <class T> class TypedScalarDataGenerator : public DataGenerator
         {
             public:
-                TypedScalarDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
+                explicit TypedScalarDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
                                                                      min_bound(get_min_bound<T>()),
                                                                      max_bound(get_max_bound<T>()),
                                                                      forbidden_min(get_max_bound<T>()),
@@ -113,7 +113,7 @@ namespace ssc
                 }
                 #endif
 
-                operator T()
+                operator T() // NOLINT(google-explicit-constructor): a.random<double>() reads as the double it generates
                 {
                     #if defined(_MSC_VER) /* Microsoft Visual Studio bullshit */
                     return msvc_bullshit();
@@ -151,7 +151,7 @@ namespace ssc
                     return *this;
                 }
 
-                TypedScalarDataGenerator<T>& no()
+                TypedScalarDataGenerator<T>& no() override
                 {
                     negated = true;
                     return *this;
@@ -195,7 +195,7 @@ namespace ssc
         template <class T> class TypedVectorDataGenerator : public DataGenerator
         {
             public:
-                TypedVectorDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
+                explicit TypedVectorDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
                                                                      size(0),
                                                                      min_bound(get_min_bound<T>()),
                                                                      max_bound(get_max_bound<T>()),
@@ -238,7 +238,7 @@ namespace ssc
                     return tmp;
                 }
 
-                operator std::vector<T>()
+                operator std::vector<T>() // NOLINT(google-explicit-constructor): a.random_vector_of<double>() reads as the vector it generates
                 {
                     return get_impl();
                 }
@@ -278,7 +278,7 @@ namespace ssc
                     return *this;
                 }
 
-                TypedVectorDataGenerator<T>& no()
+                TypedVectorDataGenerator<T>& no() override
                 {
                     negated = true;
                     return *this;
@@ -297,7 +297,7 @@ namespace ssc
         template <class T> class TypedSetDataGenerator : public DataGenerator
         {
             public:
-                TypedSetDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
+                explicit TypedSetDataGenerator(const DataGenerator& rhs) : DataGenerator(rhs),
                                                                   size(0),
                                                                   min_bound(get_min_bound<T>()),
                                                                   max_bound(get_max_bound<T>())
@@ -331,7 +331,7 @@ namespace ssc
                     return *this;
                 }
 
-                TypedSetDataGenerator<T>& no()
+                TypedSetDataGenerator<T>& no() override
                 {
                     negated = true;
                     return *this;

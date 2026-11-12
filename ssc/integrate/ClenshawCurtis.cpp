@@ -7,8 +7,8 @@
 
 #include "ssc/integrate/ClenshawCurtis.hpp"
 #include "ssc/macros/test_macros.hpp"
-#define MAX_NB_OF_PARTITIONS 2500 // Maximum number of subdivisions in the partition of (a,b)
-#define MAX_NB_OF_CHEBYCHEV_MOMENTS 1000
+constexpr int MAX_NB_OF_PARTITIONS = 2500; // Maximum number of subdivisions in the partition of (a,b)
+constexpr int MAX_NB_OF_CHEBYCHEV_MOMENTS = 1000;
 
 ssc::integrate::ClenshawCurtis::~ClenshawCurtis()
 {
@@ -49,6 +49,7 @@ ssc::integrate::ClenshawCurtis::ClenshawCurtis(const ClenshawCurtis& rhs) : Quad
 
 ssc::integrate::ClenshawCurtis& ssc::integrate::ClenshawCurtis::operator=(const ClenshawCurtis& rhs)
 {
+    if (this == &rhs) return *this;
     f = rhs.f;
     tau = rhs.tau;
     nb_of_chebychev_moments = rhs.nb_of_chebychev_moments;
@@ -131,7 +132,7 @@ ssc::integrate::ClenshawCurtis::ClenshawCurtis(const Function& f_, const double 
 extern "C" int dqawoe_(double f(void*,double*), void*, double *a, double *b, double *omega, int *
         integr, double *epsabs, double *epsrel, int *limit, int *icall,
         int *maxp1, double *result, double *abserr, int *neval, int *
-        ier, int *last, double *alist__, double *blist, double *rlist, double *
+        ier, int *last, double *alist, double *blist, double *rlist, double *
         elist, int *iord, int *nnlog, int *momcom, double *chebmo);
 
 double ssc::integrate::ClenshawCurtis::integrate_impl(const Function& f_, double a, double b, double eps)

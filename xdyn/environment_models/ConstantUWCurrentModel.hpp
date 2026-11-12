@@ -18,10 +18,10 @@ public:
         double velocity;
         double orientation;
     };
-    ConstantUWCurrentModel(const Input& input);
-    virtual ~ConstantUWCurrentModel();
+    explicit ConstantUWCurrentModel(const Input& input);
+    ~ConstantUWCurrentModel() override;
 
-    virtual Eigen::Vector3d get_UWCurrent(const Eigen::Vector3d&, const double, const double) const override;
+    Eigen::Vector3d get_UWCurrent(const Eigen::Vector3d&, const double, const double) const override;
 
     static std::string model_name();
     static Input parse(const std::string&);

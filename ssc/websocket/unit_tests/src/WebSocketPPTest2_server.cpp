@@ -1,5 +1,6 @@
 // Test Environment:
 // server, no TLS, no locks, iostream based transport
+#include <utility>
 #include <websocketpp/config/core.hpp>
 #include <websocketpp/server.hpp>
 #include <iostream>
@@ -9,21 +10,19 @@ class WebSocketPPTest2_server : public ::testing::Test
 {
     protected:
         WebSocketPPTest2_server(){}
-        virtual ~WebSocketPPTest2_server(){}
-        virtual void SetUp(){}
-        virtual void TearDown(){}
+        ~WebSocketPPTest2_server() override{}
+        void SetUp() override{}
+        void TearDown() override{}
 };
 
-typedef websocketpp::server<websocketpp::config::core> server;
-typedef websocketpp::config::core::message_type::ptr message_ptr;
+using server = websocketpp::server<websocketpp::config::core>;
+using message_ptr = websocketpp::config::core::message_type::ptr;
 
-using websocketpp::lib::placeholders::_1;
-using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
 /* Run server and return output test rig */
-std::string run_server_test(server& s, std::string input);
-std::string run_server_test(server& s, std::string input)
+std::string run_server_test(server& s, const std::string& input);
+std::string run_server_test(server& s, const std::string& input)
 {
     server::connection_ptr con;
     std::stringstream output;
@@ -44,18 +43,18 @@ std::string run_server_test(server& s, std::string input)
 }
 
 /* handler library*/
-void echo_func(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
-void echo_func(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
+void echo_func(server* s, websocketpp::connection_hdl hdl, const message_ptr& msg);
+void echo_func(server* s, websocketpp::connection_hdl hdl, const message_ptr& msg)
 {
-    s->send(hdl, msg->get_payload(), msg->get_opcode());
+    s->send(std::move(hdl), msg->get_payload(), msg->get_opcode());
 }
 
-bool validate_func_subprotocol(server* s, std::string* out, std::string accept,
+bool validate_func_subprotocol(server* s, std::string* out, const std::string& accept,
     websocketpp::connection_hdl hdl);
-bool validate_func_subprotocol(server* s, std::string* out, std::string accept,
+bool validate_func_subprotocol(server* s, std::string* out, const std::string& accept,
     websocketpp::connection_hdl hdl)
 {
-    server::connection_ptr con = s->get_con_from_hdl(hdl);
+    server::connection_ptr con = s->get_con_from_hdl(std::move(hdl));
 
     std::stringstream o;
 
@@ -78,7 +77,7 @@ bool validate_func_subprotocol(server* s, std::string* out, std::string accept,
 void open_func_subprotocol(server* s, std::string* out, websocketpp::connection_hdl hdl);
 void open_func_subprotocol(server* s, std::string* out, websocketpp::connection_hdl hdl)
 {
-    server::connection_ptr con = s->get_con_from_hdl(hdl);
+    server::connection_ptr con = s->get_con_from_hdl(std::move(hdl));
 
     *out = con->get_subprotocol();
 }
@@ -100,7 +99,7 @@ TEST_F(WebSocketPPTest2_server,  invalid_websocket_version ) {
 
     server s;
     s.set_user_agent("test");
-    //s.set_message_handler(bind(&echo_func,&s,::_1,::_2));
+    //s.set_message_handler(bind(&echo_func,&s,websocketpp::lib::placeholders::_1,websocketpp::lib::placeholders::_2));
 
     ASSERT_EQ(run_server_test(s,input), output);
 }
@@ -125,7 +124,7 @@ TEST_F(WebSocketPPTest2_server,  list_subprotocol_empty ) {
 
     server s;
     s.set_user_agent("test");
-    s.set_open_handler(bind(&open_func_subprotocol,&s,&subprotocol,::_1));
+    s.set_open_handler(bind(&open_func_subprotocol,&s,&subprotocol,websocketpp::lib::placeholders::_1));
 
     ASSERT_EQ(run_server_test(s,input), output);
     ASSERT_EQ(subprotocol, "");
@@ -141,8 +140,8 @@ TEST_F(WebSocketPPTest2_server,  list_subprotocol_one ) {
 
     server s;
     s.set_user_agent("test");
-    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"",::_1));
-    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,::_1));
+    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"",websocketpp::lib::placeholders::_1));
+    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,websocketpp::lib::placeholders::_1));
 
     ASSERT_EQ(run_server_test(s,input), output);
     ASSERT_EQ(validate, "foo,");
@@ -159,8 +158,8 @@ TEST_F(WebSocketPPTest2_server,  accept_subprotocol_one ) {
 
     server s;
     s.set_user_agent("test");
-    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"foo",::_1));
-    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,::_1));
+    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"foo",websocketpp::lib::placeholders::_1));
+    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,websocketpp::lib::placeholders::_1));
 
     ASSERT_EQ(run_server_test(s,input), output);
     ASSERT_EQ(validate, "foo,");
@@ -170,15 +169,13 @@ TEST_F(WebSocketPPTest2_server,  accept_subprotocol_one ) {
 TEST_F(WebSocketPPTest2_server,  accept_subprotocol_invalid ) {
     std::string input = "GET / HTTP/1.1\r\nHost: www.example.com\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nOrigin: http://www.example.com\r\nSec-WebSocket-Protocol: foo\r\n\r\n";
 
-    std::string output = "HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\nSec-WebSocket-Protocol: foo\r\nServer: test\r\nUpgrade: websocket\r\n\r\n";
-
     std::string validate;
     std::string open;
 
     server s;
     s.set_user_agent("test");
-    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"foo2",::_1));
-    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,::_1));
+    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"foo2",websocketpp::lib::placeholders::_1));
+    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,websocketpp::lib::placeholders::_1));
 
     std::string o;
 
@@ -195,8 +192,8 @@ TEST_F(WebSocketPPTest2_server,  accept_subprotocol_two ) {
 
     server s;
     s.set_user_agent("test");
-    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"bar",::_1));
-    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,::_1));
+    s.set_validate_handler(bind(&validate_func_subprotocol,&s,&validate,"bar",websocketpp::lib::placeholders::_1));
+    s.set_open_handler(bind(&open_func_subprotocol,&s,&open,websocketpp::lib::placeholders::_1));
 
     ASSERT_EQ(run_server_test(s,input), output);
     ASSERT_EQ(validate, "foo,bar,");
