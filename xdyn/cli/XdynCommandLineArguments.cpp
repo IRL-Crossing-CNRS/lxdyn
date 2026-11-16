@@ -7,18 +7,6 @@
 
 #include "XdynCommandLineArguments.hpp"
 
-XdynCommandLineArguments::XdynCommandLineArguments() : yaml_filenames(),
-                         solver(),
-                         output_filename(),
-                         wave_output(),
-                         assets_path(),
-                         initial_timestep(0),
-                         tstart(0),
-                         tend(0),
-                         catch_exceptions(false)
-{
-}
-
 bool XdynCommandLineArguments::empty() const
 {
     return wave_output.empty() and output_filename.empty()

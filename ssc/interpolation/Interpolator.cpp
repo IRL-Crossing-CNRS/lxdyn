@@ -9,15 +9,6 @@
 
 using namespace ssc::interpolation;
 
-Interpolator::Interpolator()
-{
-}
-
-Interpolator::~Interpolator()
-{
-
-}
-
 double Interpolator::f(const double x)
 {
     update_coefficients_if_necessary(x);

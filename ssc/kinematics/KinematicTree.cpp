@@ -34,22 +34,6 @@ using VertexMapIter = std::map<std::string,Vertex>::const_iterator;
 class KinematicTree::Impl
 {
     public:
-        Impl() : g(Graph()), name_to_vertex(std::map<std::string,Vertex>()) {}
-
-        ~Impl(){}
-        Impl& operator=(const Impl& rhs)
-        {
-            if (this!=&rhs)
-            {
-                g = rhs.g;
-            }
-            return *this;
-        }
-
-        Impl(const Impl& rhs) : g(rhs.g), name_to_vertex(rhs.name_to_vertex)
-        {
-        }
-
         void add(const std::string& frame_A, const std::string& frame_B)
         {
             const Vertex A = get_vertex(frame_A);

@@ -17,20 +17,13 @@
 #define PI M_PI
 
 CSVControllerTest::CSVControllerTest()
-    : csv()
-    , a(ssc::random_data_generator::DataGenerator(54545))
+    : a(ssc::random_data_generator::DataGenerator(54545))
 {
     csv << "t,some column,rpm_co,beta_co\n";
     csv << "0.2,23,65,78\n";
     csv << "0.796,-4.3,965.1,-7.8\n";
     csv.close();
 }
-
-CSVControllerTest::~CSVControllerTest() {}
-
-void CSVControllerTest::SetUp() {}
-
-void CSVControllerTest::TearDown() {}
 
 std::string CSVControllerTest::test_yaml() const
 {

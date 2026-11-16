@@ -23,8 +23,6 @@
  */
 struct DiscreteDirectionalWaveSpectrum
 {
-    DiscreteDirectionalWaveSpectrum();
-
     std::vector<double> Si;                                     //!< Discretized spectral density (in s m^2/rad)
     std::vector<double> Dj;                                     //!< Spatial spreading (in 1/rad)
     std::vector<double> omega;                                  //!< Angular frequencies the spectrum was discretized at (in rad/s)
@@ -48,7 +46,6 @@ struct DiscreteDirectionalWaveSpectrum
  */
 struct FlatDiscreteDirectionalWaveSpectrum
 {
-    FlatDiscreteDirectionalWaveSpectrum();
     std::vector<double> a;       //!< Amplitude (in m), for each angular frequency omega, and direction
     std::vector<double> omega;   //!< Angular frequencies the spectrum was discretized at (in rad/s), for each angular frequency omega, and direction
     std::vector<double> psi;     //!< Directions between 0 & 2pi the spatial spreading was discretized at (in rad)

@@ -256,40 +256,6 @@ Eigen::Vector3d MMGRudderForceModel::RudderModel::get_rudder_location_in_MMG_fra
 
 std::string MMGRudderForceModel::model_name() { return "MMG propeller+rudder"; }
 
-MMGRudderForceModel::Yaml::Yaml()
-    : Ar()
-    , b()
-    , xH_adim()
-    , lR_adim()
-    , tR()
-    , aH()
-    , gammaR()
-    , epsilon()
-    , kappaMmg()
-    , effective_aspect_ratio()
-    , position_of_the_rudder_in_the_body_frame(YamlCoordinates())
-    , Lpp()
-
-{
-}
-
-MMGRudderForceModel::Yaml::Yaml(const MMGPropellerForceModel::Yaml& yaml)
-    : MMGPropellerForceModel::Yaml(yaml)
-    , Ar()
-    , b()
-    , xH_adim()
-    , lR_adim()
-    , tR()
-    , aH()
-    , gammaR()
-    , epsilon()
-    , kappaMmg()
-    , effective_aspect_ratio()
-    , position_of_the_rudder_in_the_body_frame(YamlCoordinates())
-    , Lpp()
-{
-}
-
 MMGRudderForceModel::RudderModel::RudderModel(const Yaml& parameters_, const double rho_)
     : m_Ar(parameters_.Ar)
     , m_b(parameters_.b)
@@ -454,7 +420,8 @@ ssc::kinematics::Vector6d MMGRudderForceModel::get_rudder_force(
 MMGRudderForceModel::Yaml MMGRudderForceModel::parse(const std::string& yaml)
 {
     YAML::Node node = YAML::Load(yaml);
-    Yaml ret(MMGPropellerForceModel::parse(yaml));
+    Yaml ret;
+    static_cast<MMGPropellerForceModel::Yaml&>(ret) = MMGPropellerForceModel::parse(yaml);
 
     xdyn::yaml_parser::parse_uv(node["rudder area"], ret.Ar);
     xdyn::yaml_parser::parse_uv(node["rudder height"], ret.b);

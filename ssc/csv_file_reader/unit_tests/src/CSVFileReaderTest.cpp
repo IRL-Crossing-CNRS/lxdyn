@@ -11,28 +11,15 @@
 #include <fstream>
 #include <sys/stat.h>
 
-
 using namespace ssc::csv_file_reader;
 
 CSVFileReaderTest::CSVFileReaderTest() : a(ssc::random_data_generator::DataGenerator(9487))
 {
 }
 
-CSVFileReaderTest::~CSVFileReaderTest()
-{
-}
-
-void CSVFileReaderTest::SetUp()
-{
-}
-
-void CSVFileReaderTest::TearDown()
-{
-}
-
 inline void remove_file_if_it_exists (const std::string& name)
 {
-  struct stat buffer;
+  struct stat buffer{};
   if (stat (name.c_str(), &buffer) == 0) remove (name.c_str());
 }
 

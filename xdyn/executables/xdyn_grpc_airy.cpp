@@ -19,10 +19,9 @@ constexpr const char* xdyn_grpc_airy_description = "This is the Airy wave gRPC s
 
 struct XdynGrpcAiryCommandLineArguments
 {
-    short unsigned int port;
+    short unsigned int port{50051};
     std::vector<std::string> yaml_filenames;
-    bool catch_exceptions;
-    XdynGrpcAiryCommandLineArguments(): port(50051), yaml_filenames(), catch_exceptions(false){}
+    bool catch_exceptions{false};
 };
 
 po::options_description attach_command_line_arguments_to_options_description(XdynGrpcAiryCommandLineArguments& input_data);

@@ -20,24 +20,21 @@ class EkmanUWCurrentModel : public UWCurrentModel
 public:
     struct Input
     {
-        Input();
-        explicit Input(Seabed);
-        Seabed seabed;
-        double top_ekman_depth;     ///< Top layer thickness (m)
-        double bottom_ekman_depth;  ///< Bottom layer thickness (m)
-        double middle_velocity;     ///< Background current velocity (m/s)
-        double middle_orientation;  ///< Background current direction (rad)
-        double f_times_rho;      ///< Coriolis parameter times water density
-        double wind_angle;          ///< Wind direction (rad)
-        double wind_stress;         ///< Wind stress (N/m2)
-        double rho_air;             ///< Air density (kg/m3)
-        double latitude;            ///< rad
-        double U10;                 ///< 10 m wind (m/s)
-        bool depth_from_wind;       ///< "layer thickness follows wind": D = 7.6 U10 / sqrt(sin|latitude|)
-        std::string weather_file;   ///< Optional: a change of wind during the run (see below)
+        Seabed seabed{0.};
+        double top_ekman_depth{};     ///< Top layer thickness (m)
+        double bottom_ekman_depth{};  ///< Bottom layer thickness (m)
+        double middle_velocity{};     ///< Background current velocity (m/s)
+        double middle_orientation{};  ///< Background current direction (rad)
+        double f_times_rho{};         ///< Coriolis parameter times water density
+        double wind_angle{};          ///< Wind direction (rad)
+        double wind_stress{};         ///< Wind stress (N/m2)
+        double rho_air{1.225};        ///< Air density (kg/m3)
+        double latitude{};            ///< rad
+        double U10{};                 ///< 10 m wind (m/s)
+        bool depth_from_wind{false};  ///< "layer thickness follows wind": D = 7.6 U10 / sqrt(sin|latitude|)
+        std::string weather_file{};   ///< Optional: a change of wind during the run (see below)
     };
     explicit EkmanUWCurrentModel(const Input& input);
-    ~EkmanUWCurrentModel() override;
 
     Eigen::Vector3d get_UWCurrent(const Eigen::Vector3d& position, const double time, const double wave_height) const override;
 

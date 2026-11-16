@@ -15,14 +15,11 @@ class PowerLawWindVelocityProfile : public WindMeanVelocityProfile
 public:
     struct Input : public WindMeanVelocityProfile::Input
     {
-        Input();
-        explicit Input(const WindMeanVelocityProfile::Input& parent);
-        double alpha;
-        double z_ref;
+        double alpha{};
+        double z_ref{};
     };
 
     explicit PowerLawWindVelocityProfile(const Input& input);
-    ~PowerLawWindVelocityProfile() override;
 
     double get_wind_velocity(const double z) const override;
     static std::string model_name();

@@ -8,8 +8,7 @@
 
 #include "XdynForCSCommandLineArguments.hpp"
 
-XdynForCSCommandLineArguments::XdynForCSCommandLineArguments() : yaml_filenames(),
-solver(), assets_path(), initial_timestep(), catch_exceptions(), address("127.0.0.1"), port(0), verbose(false), show_help(false), show_websocket_debug_information(false), grpc(false)
+XdynForCSCommandLineArguments::XdynForCSCommandLineArguments() :  address("127.0.0.1")
 {
 }
 

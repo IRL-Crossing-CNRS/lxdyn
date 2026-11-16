@@ -21,22 +21,8 @@ class CycleException : public ssc::data_source::DataSourceException
         }
 };
 
-ssc::data_source::DataSource::DataSource() :   name2module(FromName2Module()),
-                                               readonly(false),
-                                               signals_(SignalContainer()),
-                                               module_setting_signals("DataSource user",""),
-                                               signal2module(FromSignal2Module()),
-                                               module2dependantmodules(DependantModules()),
-                                               module2requiredmodules(DependantModules()),
-                                               module2requiredsignals(DependantModules()),
-                                               signal2dependantmodules(DependantModules()),
-                                               is_up_to_date(UpdateState()),
-                                               state_names(std::vector<std::pair<std::string,std::string> >()),
-                                               aliases(std::map<TypedSignalName,TypedSignalName>()),
-                                               forced_values(SignalContainer()),
-                                               modules(std::vector<TypedModuleName>()),
-                                               call_stack(std::stack<TypedSignalName>()),
-                                               in_module(false)
+ssc::data_source::DataSource::DataSource() :
+                                               module_setting_signals("DataSource user","")
 {
 }
 
@@ -53,9 +39,7 @@ ssc::data_source::DataSource::DataSource(const DataSource& ds) :  name2module(ds
                                                                   state_names(ds.state_names),
                                                                   aliases(ds.aliases),
                                                                   forced_values(ds.forced_values),
-                                                                  modules(std::vector<TypedModuleName>()),
-                                                                  call_stack(ds.call_stack),
-                                                                  in_module(false)
+                                                                  call_stack(ds.call_stack)
 {
     // We need to make sure that all modules now refer to the current DataSource
     FromName2Module::iterator it1 = name2module.begin();

@@ -7,10 +7,6 @@ gRPCProtoBufServer::gRPCProtoBufServer(const std::shared_ptr<grpc::Service>& han
 {
 }
 
-gRPCProtoBufServer::~gRPCProtoBufServer()
-{
-}
-
 void gRPCProtoBufServer::start(const short unsigned int port)
 {
     std::stringstream ss;

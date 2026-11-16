@@ -18,11 +18,10 @@ class FlettnerRotorForceModel : public ForceModel
     public:
         struct Input
         {
-            Input();
             std::string name;
             YamlCoordinates calculation_point_in_body_frame;
-            double diameter;
-            double length;
+            double diameter{0.0};
+            double length{0.0};
             std::vector<double> spin_ratio;
             std::vector<double> lift_coefficient;
             std::vector<double> drag_coefficient;
@@ -30,7 +29,6 @@ class FlettnerRotorForceModel : public ForceModel
 
         FlettnerRotorForceModel(const Input& input, const std::string& body_name, const EnvironmentAndFrames& env);
         FlettnerRotorForceModel() = delete;
-        ~FlettnerRotorForceModel() override = default;
 
         static std::string model_name();
         static Input parse(const std::string& yaml);

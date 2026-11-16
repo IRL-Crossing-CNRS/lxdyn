@@ -16,7 +16,6 @@ class ErrorReporter
             INTERNAL_ERROR,
             NETWORK_ERROR
         };
-        ErrorReporter();
         void invalid_request(const std::string &function, const int line);
         void empty_history();
         void invalid_state_size(const std::string& state_name, const size_t state_size, const size_t t_size);
@@ -38,7 +37,7 @@ class ErrorReporter
       private:
           void run_and_report_errors(const std::function<void(void)>& f, const bool dump_yaml, const std::string& yaml_dump);
           std::stringstream ss;
-          Status status;
+          Status status{Status::OK};
 
 };
 

@@ -13,61 +13,40 @@
 #include "xdyn/external_data_structures/YamlBody.hpp"
 
 BodyStates::BodyStates(const double Tmax) : AbstractStates<History>(Tmax),
-name(),
-G(),
-mesh(),
-total_inertia(),
-solid_body_inertia(),
-inverse_of_the_total_inertia(),
+
 x_relative_to_mesh(),
 y_relative_to_mesh(),
 z_relative_to_mesh(),
 mesh_to_body(),
-M(),
-intersector(),
+
 g_in_mesh_frame(),
-hydrodynamic_forces_calculation_point(),
-convention(),
+
 states_filter(YamlFilteredStates())
 {
 }
 
 BodyStates::BodyStates(const YamlFilteredStates& filtered_states, const double Tmax) : AbstractStates<History>(Tmax),
-name(),
-G(),
-mesh(),
-total_inertia(),
-solid_body_inertia(),
-inverse_of_the_total_inertia(),
+
 x_relative_to_mesh(),
 y_relative_to_mesh(),
 z_relative_to_mesh(),
 mesh_to_body(),
-M(),
-intersector(),
+
 g_in_mesh_frame(),
-hydrodynamic_forces_calculation_point(),
-convention(),
+
 states_filter(filtered_states)
 {
 }
 
 BodyStates::BodyStates(const StatesFilter& states_filter_, const double Tmax) : AbstractStates<History>(Tmax),
-name(),
-G(),
-mesh(),
-total_inertia(),
-solid_body_inertia(),
-inverse_of_the_total_inertia(),
+
 x_relative_to_mesh(),
 y_relative_to_mesh(),
 z_relative_to_mesh(),
 mesh_to_body(),
-M(),
-intersector(),
+
 g_in_mesh_frame(),
-hydrodynamic_forces_calculation_point(),
-convention(),
+
 states_filter(states_filter_)
 {
 }

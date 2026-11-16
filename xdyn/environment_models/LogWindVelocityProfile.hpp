@@ -15,14 +15,11 @@ class LogWindVelocityProfile : public WindMeanVelocityProfile
 public:
     struct Input : public WindMeanVelocityProfile::Input
     {
-        Input();
-        explicit Input(const WindMeanVelocityProfile::Input& parent);
-        double z0;
-        double z_ref;
+        double z0{};
+        double z_ref{};
     };
 
     explicit LogWindVelocityProfile(const Input& input);
-    ~LogWindVelocityProfile() override;
 
     double get_wind_velocity(const double z) const override;
     static std::string model_name();

@@ -27,9 +27,6 @@ constexpr int WEBSOCKET_PORT = 1234;
 
 struct ListOfStringMessages : public ssc::websocket::MessageHandler
 {
-    ListOfStringMessages() : messages()
-    {
-    }
     void operator()(const ssc::websocket::Message& msg) override
     {
         messages.push_back(msg.get_payload());
@@ -39,18 +36,6 @@ struct ListOfStringMessages : public ssc::websocket::MessageHandler
 };
 
 ObserverTests::ObserverTests() : a(ssc::random_data_generator::DataGenerator(542021))
-{
-}
-
-ObserverTests::~ObserverTests()
-{
-}
-
-void ObserverTests::SetUp()
-{
-}
-
-void ObserverTests::TearDown()
 {
 }
 

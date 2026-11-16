@@ -11,16 +11,6 @@
 #include <cmath>
 #include <string>
 
-FlettnerRotorForceModel::Input::Input():
-    name(""),
-    calculation_point_in_body_frame(YamlCoordinates()),
-    diameter(0.0),
-    length(0.0),
-    spin_ratio(std::vector<double>()),
-    lift_coefficient(std::vector<double>()),
-    drag_coefficient(std::vector<double>())
-{}
-
 std::string FlettnerRotorForceModel::model_name() {return "Flettner rotor";}
 
 FlettnerRotorForceModel::FlettnerRotorForceModel(const Input& input, const std::string& body_name, const EnvironmentAndFrames& env):

@@ -15,10 +15,6 @@ DataSourceModule::DataSourceModule(DataSource* const data_source, const std::str
 
 }
 
-DataSourceModule::~DataSourceModule()
-{
-}
-
 std::string DataSourceModule::get_name() const
 {
     return module_name_;

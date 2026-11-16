@@ -7,8 +7,7 @@
 #include "xdyn/yaml_parser/yaml_compat.h"
 
 FilteredStates::FilteredStates(const StatesFilter& filters, const AbstractStates<History>& states, const YamlRotation& rot)
-    : AbstractStates<double>()
-    , phi(filters.get_filtered_phi(states, rot))
+    : phi(filters.get_filtered_phi(states, rot))
     , theta(filters.get_filtered_theta(states, rot))
     , psi(filters.get_filtered_psi(states, rot))
     , rotation_convention(rot)
@@ -67,11 +66,6 @@ std::shared_ptr<StateFilter> StateFilter::build(const std::string& yaml)
     THROW(__PRETTY_FUNCTION__, InvalidInputException, "Unknown filter '" << type_of_filter << "': known state filters are: 'moving average'.");
     return std::shared_ptr<StateFilter>(new MovingAverage(0));
 }
-
-StateFilter::StateFilter() {}
-
-StateFilter::~StateFilter() {}
-
 
 StatesFilter::StatesFilter(const YamlFilteredStates& input)
     : x(StateFilter::build(input.x))

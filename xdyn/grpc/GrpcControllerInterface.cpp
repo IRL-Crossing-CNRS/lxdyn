@@ -120,9 +120,6 @@ GrpcSetParametersResponse::GrpcSetParametersResponse():
     command_names()
 {}
 */
-GrpcControllerResponse::GrpcControllerResponse(): commands(), next_call(0.0){}
-
-GrpcControllerInterface::Input::Input ():url(), name(), yaml(){}
 
 struct GrpcControllerInterface::Impl
 {
@@ -204,8 +201,7 @@ pimpl(std::move(pimpl_)),
 set_parameters_response(set_parameters_response_)
 {}
 
-GrpcControllerInterface::~GrpcControllerInterface()
-{}
+GrpcControllerInterface::~GrpcControllerInterface() = default;
 
 double GrpcControllerInterface::get_dt() const
 {

@@ -20,15 +20,11 @@ PowerLawWindVelocityProfile::PowerLawWindVelocityProfile(const Input& input) : W
     }
 }
 
-PowerLawWindVelocityProfile::~PowerLawWindVelocityProfile()
-{
-}
-
 std::string PowerLawWindVelocityProfile::model_name() {return "power law wind profile";}
 
 PowerLawWindVelocityProfile::Input PowerLawWindVelocityProfile::parse(const std::string& yaml_input)
 {
-    Input ret(WindMeanVelocityProfile::parse(yaml_input));
+    Input ret{WindMeanVelocityProfile::parse(yaml_input)};
     YAML::Node node = YAML::Load(yaml_input);
     node["alpha"] >> ret.alpha;
     xdyn::yaml_parser::parse_uv(node["reference height"], ret.z_ref);
@@ -39,12 +35,4 @@ double PowerLawWindVelocityProfile::get_wind_velocity(const double z) const
 {
     if(z <= 0) return velocity * std::pow(-z / z_ref, alpha); // -z because the NED frame has negative z above sea level
     else return 0.;
-}
-
-PowerLawWindVelocityProfile::Input::Input(const WindMeanVelocityProfile::Input& parent) : WindMeanVelocityProfile::Input(parent), alpha(), z_ref()
-{
-}
-
-PowerLawWindVelocityProfile::Input::Input() : WindMeanVelocityProfile::Input(), alpha(), z_ref()
-{
 }

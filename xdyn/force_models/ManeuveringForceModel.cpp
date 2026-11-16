@@ -14,13 +14,6 @@
 #include "xdyn/yaml_parser/external_data_structures_parsers.hpp"
 #include "xdyn/yaml_parser/yaml_compat.h"
 
-ManeuveringForceModel::Yaml::Yaml():
-    name(),
-    frame_of_reference(),
-    commands(),
-    var2expr()
-{}
-
 std::string ManeuveringForceModel::model_name() {return "maneuvering";}
 
 ManeuveringForceModel::Yaml ManeuveringForceModel::parse(const std::string& yaml)
@@ -63,7 +56,6 @@ ManeuveringForceModel::Yaml ManeuveringForceModel::parse(const std::string& yaml
 
 ManeuveringForceModel::ManeuveringForceModel(const Yaml& data, const std::string& body_name_, const EnvironmentAndFrames& env) :
         ForceModel(data.name, data.commands, data.frame_of_reference, body_name_, env),
-        m(),
         ds(new ssc::data_source::DataSource())
 {
     env.k->add(make_transform(data.frame_of_reference, data.name, env.rot));

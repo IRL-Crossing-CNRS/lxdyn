@@ -19,8 +19,7 @@ class WaveSpectralDensity;
 class SpectrumBuilderInterface
 {
     public:
-        SpectrumBuilderInterface() {}
-        virtual ~SpectrumBuilderInterface(){}
+        virtual ~SpectrumBuilderInterface()= default;
         virtual std::optional<std::shared_ptr<WaveSpectralDensity> > try_to_parse(const std::string& model, const std::string& yaml) const = 0;
 };
 

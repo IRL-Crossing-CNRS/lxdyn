@@ -13,13 +13,12 @@
 
 struct YamlOutput
 {
-    YamlOutput();
     std::string filename;
     std::string format;
     std::string address;
-    short unsigned int port;
+    short unsigned int port{};
     std::vector<std::string> data;
-    bool full_output;
+    bool full_output{false};
 };
 
 #endif /* YAMLOUTPUT_HPP_ */

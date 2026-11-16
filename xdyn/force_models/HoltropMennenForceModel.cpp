@@ -10,29 +10,6 @@ std::string HoltropMennenForceModel::model_name()
     return "Holtrop & Mennen";
 }
 
-HoltropMennenForceModel::Input::Input() :
-        Lwl(),
-        Lpp(),
-        B(),
-        Ta(),
-        Tf(),
-        Vol(),
-        lcb(),
-        S(),
-        Abt(),
-        hb(),
-        Cm(),
-        Cwp(),
-        iE(),
-        At(),
-        Sapp(),
-        Cstern(),
-        hull_form_coeff(),
-        app_form_coeff(),
-        apply_on_ship_speed_direction(false)
-{
-}
-
 HoltropMennenForceModel::Input HoltropMennenForceModel::parse(const std::string& yaml)
 {
     YAML::Node node = YAML::Load(yaml);
@@ -106,7 +83,6 @@ HoltropMennenForceModel::DerivedData::DerivedData(const Input& base_data) :
 
 HoltropMennenForceModel::HoltropMennenForceModel(const Input& data, const std::string& body_name, const EnvironmentAndFrames& env) :
         ForceModel(HoltropMennenForceModel::model_name(), {}, body_name, env),
-        d(-0.9),
         input(data),
         derived(data),
         gravity_force(input.Vol*env.rho*env.g)

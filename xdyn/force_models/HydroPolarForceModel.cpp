@@ -8,19 +8,6 @@
 #include <algorithm>
 #include <cmath>
 
-HydroPolarForceModel::Input::Input():
-    name(),
-    internal_frame(),
-    angle_of_attack(),
-    lift_coefficient(),
-    drag_coefficient(),
-    moment_coefficient(),
-    reference_area(0.0),
-    chord_length(),
-    use_waves_velocity(false),
-    angle_command()
-{}
-
 std::string HydroPolarForceModel::model_name()
 {
     return "hydrodynamic polar";
@@ -28,9 +15,6 @@ std::string HydroPolarForceModel::model_name()
 
 HydroPolarForceModel::HydroPolarForceModel(const Input& input, const std::string& body_name_, const EnvironmentAndFrames& env):
         ForceModel(input.name, input.angle_command ? std::vector<std::string>({input.angle_command.value()}) : std::vector<std::string>(), input.internal_frame, body_name_, env),
-        Cl(),
-        Cd(),
-        Cm(),
         reference_area(input.reference_area),
         chord_length(input.chord_length),
         symmetry(),

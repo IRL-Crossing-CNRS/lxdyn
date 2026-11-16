@@ -13,7 +13,6 @@
 #include <Eigen/Dense>
 struct Section
 {
-    Section();
     std::string title;
     std::map<std::string, double> scalar_values;
     std::map<std::string, std::string> string_values;
@@ -25,13 +24,13 @@ struct RAOAttributes
     RAOAttributes();
     std::string name;
     Eigen::Vector3d position;
-    double h; // Depth
+    double h{}; // Depth
     std::string  h_unit;
-    double phi_a; // Roll amplitude
+    double phi_a{}; // Roll amplitude
     std::string phi_a_unit;
-    double U; // Speed
+    double U{}; // Speed
     std::string U_unit;
-    double mu; // Waves direction
+    double mu{}; // Waves direction
     std::string mu_unit;
     std::string amplitude_unit;
     std::string phase_unit;
@@ -39,7 +38,6 @@ struct RAOAttributes
 
 struct RAO
 {
-    RAO();
     std::string title_line;
     RAOAttributes attributes;
     std::vector<double> left_column;
@@ -48,7 +46,6 @@ struct RAO
 
 struct PrecalFile
 {
-    PrecalFile();
     std::vector<Section> sections;
     std::vector<RAO> raos;
 };

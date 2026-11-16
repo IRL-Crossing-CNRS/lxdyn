@@ -10,10 +10,6 @@
 #include <memory>
 #include "xdyn/external_data_structures/YamlWaveModelInput.hpp"
 
-SurfaceElevationBuilderInterface::~SurfaceElevationBuilderInterface()
-{
-}
-
 std::pair<double,double> get_wave_mesh_step_size(const YamlWaveOutput& output);
 std::pair<double,double> get_wave_mesh_step_size(const YamlWaveOutput& output)
 {

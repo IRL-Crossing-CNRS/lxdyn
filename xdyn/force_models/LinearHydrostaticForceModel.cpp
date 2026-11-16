@@ -10,15 +10,6 @@
 #include "xdyn/yaml_parser/parse_unit_value.hpp"
 #include "xdyn/yaml_parser/yaml_compat.h"
 
-LinearHydrostaticForceModel::Input::Input():
-    z_eq(0.0),
-    theta_eq(0.0),
-    phi_eq(0.0),
-    K1(),
-    K2(),
-    K3()
-{}
-
 std::string LinearHydrostaticForceModel::model_name() {return "linear hydrostatics";}
 
 LinearHydrostaticForceModel::Input LinearHydrostaticForceModel::parse(const std::string& yaml)

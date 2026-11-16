@@ -14,10 +14,6 @@ ConstantUWCurrentModel::ConstantUWCurrentModel(const Input& input) :
 {
 }
 
-ConstantUWCurrentModel::~ConstantUWCurrentModel()
-{
-}
-
 std::string ConstantUWCurrentModel::model_name() {return "constant UW current";}
 
 ConstantUWCurrentModel::Input ConstantUWCurrentModel::parse(const std::string& yaml_input)
@@ -36,10 +32,4 @@ Eigen::Vector3d ConstantUWCurrentModel::get_UWCurrent(const Eigen::Vector3d& pos
         return Eigen::Vector3d(velocity*std::cos(orientation), velocity*std::sin(orientation), 0.);
     }
     return Eigen::Vector3d::Zero();
-}
-
-ConstantUWCurrentModel::Input::Input() :
-    velocity(),
-    orientation()
-{
 }

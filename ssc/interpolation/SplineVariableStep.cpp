@@ -27,10 +27,7 @@ extern "C"
 class VectorsAreTheRightSize
 {
     public:
-        VectorsAreTheRightSize()
-        {
-
-        }
+        VectorsAreTheRightSize() = default;
 
         VectorsAreTheRightSize(const std::vector<double>& x, const std::vector<double>& y)
         {
@@ -76,7 +73,7 @@ std::vector<Coeff> get_coeffs(const std::vector<double>& x, const std::vector<do
     cubspl_(tau, c, n, ibcbeg, ibcend);
     for (int i = 0 ; i < *n-1 ; ++i)
     {
-        Coeff coeff;
+        Coeff coeff{};
         coeff.a = c[4*i + 0];
         coeff.b = c[4*i + 1];
         coeff.c = c[4*i + 2];
@@ -94,23 +91,13 @@ std::vector<Coeff> get_coeffs(const std::vector<double>& x, const std::vector<do
 class SplineVariableStep::Impl
 {
     public:
-        Impl() : check_that(VectorsAreTheRightSize()),
-                 n(0),
-                 x(),
-                 y(),
-                 h(),
-                 coeffs(),
-                 xleft()
+        Impl() :
+                 n(0)
         {
         }
 
         Impl(const std::vector<double>& x_, const std::vector<double>& y_) : check_that(VectorsAreTheRightSize(x_,y_)),
-                                                                             n(x_.size()),
-                                                                             x(),
-                                                                             y(),
-                                                                             h(),
-                                                                             coeffs(),
-                                                                             xleft()
+                                                                             n(x_.size())
         {
             sort_xs(x_,y_);
             coeffs = get_coeffs(x,y);

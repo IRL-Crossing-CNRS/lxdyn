@@ -34,7 +34,7 @@ void flush(std::string& buffer, std::vector<std::string>& tokens)
 class AbstractLineGetter
 {
     public:
-        virtual ~AbstractLineGetter() {}
+        virtual ~AbstractLineGetter() = default;
         virtual std::string get_next_line() = 0;
         virtual bool has_more_lines() const = 0;
 };
@@ -45,7 +45,6 @@ template <typename T> class LineGetter : public AbstractLineGetter
     explicit LineGetter(const std::string& s) : stream(s)
     {}
 
-    ~LineGetter() override {}
     std::string get_next_line() override
     {
         std::string normalized_line;
@@ -102,13 +101,6 @@ class Parser
   public:
     explicit Parser(AbstractLineGetter& line_getter_)
         : line_getter(line_getter_)
-        , current_section()
-        , parsed_sections()
-        , current_vector_value()
-        , current_line_number(0)
-        , raos()
-        , current_rao()
-        , started_parsing_raos(false)
     {
     }
 
@@ -356,10 +348,10 @@ class Parser
     Section current_section;
     std::vector<Section> parsed_sections;
     std::pair<std::string, std::vector<double> > current_vector_value;
-    size_t current_line_number;
+    size_t current_line_number{0};
     std::vector<RAO> raos;
     RAO current_rao;
-    bool started_parsing_raos;
+    bool started_parsing_raos{false};
 };
 
 PrecalFile common_precal_parser(AbstractLineGetter& line_getter);
@@ -385,41 +377,8 @@ PrecalFile parse_precal_from_file(const std::string& filename)
     return common_precal_parser(line_getter);
 }
 
-Section::Section()
-    : title()
-    , scalar_values()
-    , string_values()
-    , vector_values()
-{
-}
-
-RAO::RAO()
-    : title_line()
-    , attributes()
-    , left_column()
-    , right_column()
-{
-}
-
-PrecalFile::PrecalFile()
-    : sections()
-    , raos()
-{
-}
-
 RAOAttributes::RAOAttributes()
-    : name()
-    , position()
-    , h()
-    , h_unit()
-    , phi_a()
-    , phi_a_unit()
-    , U()
-    , U_unit()
-    , mu()
-    , mu_unit()
-    , amplitude_unit()
-    , phase_unit()
+    : position()
 {
 }
 

@@ -20,7 +20,7 @@ namespace hdb
 
     template <typename T> struct Key
     {
-        Key() : header(), value() {}
+        Key() :  value() {}
 
         Header header;
         T      value;
@@ -28,49 +28,37 @@ namespace hdb
 
     struct VectorSection
     {
-            VectorSection() : header(), values() {}
-
         Header header;
         Values values;
     };
 
     struct MatrixSection
     {
-            MatrixSection() : header(), values() {}
-
         Header header;
         ListOfValues values;
     };
 
     struct SectionWithId
     {
-        SectionWithId() : header(), id(), values() {}
-
         Header header;
-        Value  id;
+        Value  id{};
         ListOfValues values;
     };
 
     struct ListOfMatrixSections
     {
-        ListOfMatrixSections() : header(), sections() {}
-
         Header               header;
         std::vector<MatrixSection> sections;
     };
 
     struct ListOfMatrixSectionsWithId
     {
-            ListOfMatrixSectionsWithId() : header(), sections_with_id() {}
-
         Header                     header;
         std::vector<SectionWithId> sections_with_id;
     };
 
     struct AST
     {
-        AST() : string_keys(), value_keys(), vector_sections(), matrix_sections(), lists_of_matrix_sections(), lists_of_matrix_sections_with_id() {}
-
         std::vector<Key<std::string> >    string_keys;
         std::vector<Key<double> >         value_keys;
         std::vector<VectorSection>        vector_sections;

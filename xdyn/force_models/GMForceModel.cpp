@@ -19,13 +19,8 @@
 
 std::string GMForceModel::model_name(){return "GM";}
 
-GMForceModel::Yaml::Yaml() : name_of_hydrostatic_force_model(), roll_step(0), try_to_parse(ForceParser())
-{
-}
-
 GMForceModel::GMForceModel(const Yaml& data, const std::string& body_name_, const EnvironmentAndFrames& env) :
         ImmersedSurfaceForceModel(model_name(), body_name_, env)
-, underlying_hs_force_model()
 , dphi(data.roll_step)
 , env(env)
 , GM(0)

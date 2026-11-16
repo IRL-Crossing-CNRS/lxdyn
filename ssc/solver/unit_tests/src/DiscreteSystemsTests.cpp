@@ -24,12 +24,6 @@ DiscreteSystemsTests::DiscreteSystemsTests()
 {
 }
 
-DiscreteSystemsTests::~DiscreteSystemsTests() {}
-
-void DiscreteSystemsTests::SetUp() {}
-
-void DiscreteSystemsTests::TearDown() {}
-
 using EulerStepper = boost::numeric::odeint::euler<StateType>;
 using RungeKuttaStepper = boost::numeric::odeint::runge_kutta4<StateType>;
 
@@ -54,7 +48,6 @@ class DiscreteSystem : public ssc::solver::DiscreteSystem
     DiscreteSystem(const double tstart_, const double dt_)
         : ssc::solver::DiscreteSystem(tstart_, dt_)
         , ticks({ 13 })
-        , calltimes()
     {
         
     }
@@ -74,7 +67,6 @@ class DiscreteSystemThatStopsAfterAWhile : public ssc::solver::DiscreteSystem
   public:
     DiscreteSystemThatStopsAfterAWhile(const double tstart_, const double dt_, const double tmax_)
         : ssc::solver::DiscreteSystem(tstart_, dt_)
-        , calltimes()
         , ddt(dt_)
         , ttstart(tstart_)
         , tmax(tmax_)

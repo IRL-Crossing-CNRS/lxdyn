@@ -32,7 +32,7 @@ std::string current_date_time();
 std::string current_date_time()
 {
     time_t     now = time(nullptr);
-    struct tm  tstruct;
+    struct tm  tstruct{};
     char       buf[80];
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
@@ -45,9 +45,7 @@ class JSONWebSocketServer
         JSONWebSocketServer(const ServiceT& service, const bool verbose) : handler(service, verbose)
         {
         }
-        virtual ~JSONWebSocketServer()
-        {
-        }
+        virtual ~JSONWebSocketServer() = default;
 
         void start(const std::string& address, const short unsigned int port, const bool debug)
         {
@@ -70,10 +68,7 @@ class JSONWebSocketServer
         class JSONHandler : public ssc::websocket::MessageHandler
         {
             public:
-                JSONHandler(const ServiceT& simserver, const bool verbose_) : sim_server(simserver), verbose(verbose_), error_outputter()
-                {
-                }
-                ~JSONHandler() override
+                JSONHandler(const ServiceT& simserver, const bool verbose_) : sim_server(simserver), verbose(verbose_)
                 {
                 }
 

@@ -15,11 +15,8 @@ class VectorOfEquallySpacedNumbersTest : public ::testing::Test
 {
     protected:
         VectorOfEquallySpacedNumbersTest();
-        ~VectorOfEquallySpacedNumbersTest() override;
-        void SetUp() override;
-        void TearDown() override;
         ssc::random_data_generator::DataGenerator a;
-        const double eps;
+        const double eps{1E-10};
 
 };
 

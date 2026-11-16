@@ -14,10 +14,6 @@ Controller::Controller(const double date_of_first_call_, const double dt, const 
 {
 }
 
-Controller::~Controller()
-{
-}
-
 std::vector<std::string> Controller::get_outputs() const
 {
     return get_command_names();

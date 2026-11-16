@@ -8,10 +8,6 @@
 #include "SimObserver.hpp"
 #include "xdyn/core/Sim.hpp"
 
-SimObserver::SimObserver() : res(std::vector<Res>())
-{
-}
-
 void SimObserver::check_variables_to_serialize_are_available() const
 {}
 

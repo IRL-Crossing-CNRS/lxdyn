@@ -25,29 +25,25 @@ enum class FilterableState {X, Y, Z, U, V, W, P, Q, R, PHI, THETA, PSI};
 template <typename T> struct YamlDOF
 {
     YamlDOF() :
-        state(BlockableState::U),
         t(),
         value(),
-        interpolation(InterpolationType::PIECEWISE_CONSTANT),
         howApplied({0.,0.,0.,0.,0.,0.})
     {}
-    virtual ~YamlDOF() {}
-    BlockableState state;
+    virtual ~YamlDOF() = default;
+    BlockableState state{BlockableState::U};
     T t;
     T value;
-    InterpolationType interpolation;
+    InterpolationType interpolation{InterpolationType::PIECEWISE_CONSTANT};
     std::vector<double> howApplied;
 };
 
 struct YamlCSVDOF : public YamlDOF<std::string>
 {
-    YamlCSVDOF();
     std::string filename;
 };
 
 struct YamlBlockedDOF
 {
-    YamlBlockedDOF();
     std::vector<YamlDOF<std::vector<double> > > from_yaml;
     std::vector<YamlCSVDOF> from_csv;
 };
@@ -71,7 +67,6 @@ struct YamlFilteredStates
 
 struct YamlBody
 {
-    YamlBody();
     std::string name;
     std::string mesh;
     YamlPosition position_of_body_frame_relative_to_mesh;

@@ -31,17 +31,6 @@ std::string Velocity::get_frame() const
     return P.get_frame();
 }
 
-Velocity& Velocity::operator=(Velocity rhs)
-{
-    swap(rhs);
-    return *this;
-}
-
-Velocity::Velocity(const Velocity& rhs) : P(rhs.P), vP(rhs.vP), omega(rhs.omega)
-{
-
-}
-
 Velocity::Velocity(const Point& p_, const TranslationVelocityVector& t_, const AngularVelocityVector& w) : P(p_), vP(t_), omega(w)
 {
 }

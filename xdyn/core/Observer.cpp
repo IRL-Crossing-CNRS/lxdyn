@@ -12,12 +12,8 @@
 #include <algorithm>
 
 Observer::Observer()
-    : requested_serializations()
-    , initialized(false)
+    : initialized(false)
     , output_everything(true)
-    , serializers_called_before_solver_step()
-    , serializers_called_after_solver_step()
-    , initialize()
 {
 }
 
@@ -25,9 +21,6 @@ Observer::Observer(const std::vector<std::string>& data_)
     : requested_serializations(data_)
     , initialized(false)
     , output_everything(false)
-    , serializers_called_before_solver_step()
-    , serializers_called_after_solver_step()
-    , initialize()
 {
 }
 
@@ -216,10 +209,6 @@ void Observer::serialize_before_solver_step(const std::vector<std::string>& vari
 void Observer::serialize_after_solver_step(const std::vector<std::string>& variables_to_serialize)
 {
     serialize_requested_variables(variables_to_serialize, serializers_called_after_solver_step);
-}
-
-Observer::~Observer()
-{
 }
 
 void Observer::flush()

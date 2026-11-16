@@ -3,7 +3,7 @@
 #include "TempFile.hpp"
 #include "xdyn/exceptions/InvalidInputException.hpp"
 
-CSVLineByLineReaderTest::CSVLineByLineReaderTest() : csv(), a(29081981)
+CSVLineByLineReaderTest::CSVLineByLineReaderTest() :  a(29081981)
 {
 }
 
@@ -91,12 +91,6 @@ void non_existent_command_column(TempFile& csv)
     csv << "2.01,2.85,66.5,47.78\n";
     csv.close();
 }
-
-CSVLineByLineReaderTest::~CSVLineByLineReaderTest() {}
-
-void CSVLineByLineReaderTest::SetUp() {}
-
-void CSVLineByLineReaderTest::TearDown() {}
 
 CSVLineByLineReader CSVLineByLineReaderTest::get_reader() const
 {

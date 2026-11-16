@@ -15,10 +15,6 @@ ImmersedSurfaceForceModel::ImmersedSurfaceForceModel(
 {
 }
 
-ImmersedSurfaceForceModel::~ImmersedSurfaceForceModel()
-{
-}
-
 FacetIterator ImmersedSurfaceForceModel::begin(const MeshIntersectorPtr& intersector) const
 {
     return intersector->begin_immersed();

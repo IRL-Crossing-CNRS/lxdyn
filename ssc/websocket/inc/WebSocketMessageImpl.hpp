@@ -16,13 +16,7 @@ using message_ptr = WSServer::message_ptr;
 
 struct WebSocketMessageImpl
 {
-    WebSocketMessageImpl();
-    ~WebSocketMessageImpl();
-    WebSocketMessageImpl(const WebSocketMessageImpl& rhs);
-    WebSocketMessageImpl& operator=(const WebSocketMessageImpl& rhs);
-
-
-    WSServer* server;
+    WSServer* server{};
     websocketpp::connection_hdl handle;
     message_ptr message;
 };

@@ -2,7 +2,6 @@
 #include <ssc/websocket.hpp>
 
 WebSocketObserver::WebSocketObserver(const std::string& address, const short unsigned int port):
-            DictObserver(),
             socket(new ssc::websocket::Client(address, port))
 {
     if (not(socket->good()))
@@ -19,10 +18,6 @@ WebSocketObserver::WebSocketObserver(const std::string& address, const short uns
     {
         THROW(__PRETTY_FUNCTION__, ssc::websocket::WebSocketException, "WebSocketObserver failed to connect to address " + address);
     }
-}
-
-WebSocketObserver::~WebSocketObserver()
-{
 }
 
 void WebSocketObserver::flush_after_write()

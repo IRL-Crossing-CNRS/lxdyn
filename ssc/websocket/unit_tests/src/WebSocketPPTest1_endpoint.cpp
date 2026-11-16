@@ -6,11 +6,6 @@
 #include "gtest/gtest.h"
 class WebSocketPPTest1_endpoint : public ::testing::Test
 {
-    protected:
-        WebSocketPPTest1_endpoint(){}
-        ~WebSocketPPTest1_endpoint() override{}
-        void SetUp() override{}
-        void TearDown() override{}
 };
 
 TEST_F(WebSocketPPTest1_endpoint,  construct_server_iostream ) {
@@ -38,8 +33,6 @@ TEST_F(WebSocketPPTest1_endpoint,  initialize_server_asio ) {
 //}
 
 struct endpoint_extension {
-    endpoint_extension() : extension_value(5) {}
-
     int extension_method() {
         return extension_value;
     }
@@ -48,7 +41,7 @@ struct endpoint_extension {
         return false;
     }
 
-    int extension_value;
+    int extension_value{5};
 };
 
 TEST_F(WebSocketPPTest1_endpoint,  listen_after_listen_failure )

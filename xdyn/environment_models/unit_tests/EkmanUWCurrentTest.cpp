@@ -37,19 +37,10 @@ std::string write_seabed_image()
 EkmanUWCurrentTest::EkmanUWCurrentTest() : a(ssc::random_data_generator::DataGenerator(149555))
 {}
 
-EkmanUWCurrentTest::~EkmanUWCurrentTest()
-{}
-
-void EkmanUWCurrentTest::SetUp()
-{}
-
-void EkmanUWCurrentTest::TearDown()
-{}
-
 TEST_F(EkmanUWCurrentTest, test_velocity)
 {
     Seabed seabed(65.65);
-    EkmanUWCurrentModel::Input input(seabed);
+    EkmanUWCurrentModel::Input input{seabed};
     EkmanUWCurrentModel model(input);
     const Eigen::Vector3d point1(1.8, 13.2, 1.5);
     model.get_UWCurrent(point1, 0, 5.5);

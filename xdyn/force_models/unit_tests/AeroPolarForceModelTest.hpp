@@ -6,8 +6,6 @@
 class AeroPolarForceModelTest : public ::testing::Test
 {
     public:
-        AeroPolarForceModelTest();
-        ~AeroPolarForceModelTest() override = default;
 };
 
 #endif /* FORCE_MODELS_UNIT_TESTS_INC_AEROPOLARFORCEMODELTEST_HPP_ */
