@@ -32,7 +32,7 @@ public:
         double latitude{};            ///< rad
         double U10{};                 ///< 10 m wind (m/s)
         bool depth_from_wind{false};  ///< "layer thickness follows wind": D = 7.6 U10 / sqrt(sin|latitude|)
-        std::string weather_file{};   ///< Optional: a change of wind during the run (see below)
+        std::string weather_file;     ///< Optional: a change of wind during the run (see below)
     };
     explicit EkmanUWCurrentModel(const Input& input);
 
@@ -80,9 +80,9 @@ private:
     std::string weather_file;
     mutable WindLayer weather_from;
     mutable WindLayer weather_to;
-    mutable double weather_start;
-    mutable double weather_duration;
-    mutable bool has_weather;
+    mutable double weather_start{0};
+    mutable double weather_duration{0};
+    mutable bool has_weather{false};
     mutable std::chrono::steady_clock::time_point next_weather_check;
     mutable std::filesystem::file_time_type weather_file_time;
     void reload_weather_if_changed() const;

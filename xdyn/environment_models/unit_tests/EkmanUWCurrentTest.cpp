@@ -40,7 +40,8 @@ EkmanUWCurrentTest::EkmanUWCurrentTest() : a(ssc::random_data_generator::DataGen
 TEST_F(EkmanUWCurrentTest, test_velocity)
 {
     Seabed seabed(65.65);
-    EkmanUWCurrentModel::Input input{seabed};
+    EkmanUWCurrentModel::Input input;
+    input.seabed = seabed;
     EkmanUWCurrentModel model(input);
     const Eigen::Vector3d point1(1.8, 13.2, 1.5);
     model.get_UWCurrent(point1, 0, 5.5);
@@ -127,8 +128,9 @@ TEST_F(EkmanUWCurrentTest, top_layer_satisfies_the_ekman_balance)
 
     const double dz = 1e-3;
     std::vector<std::complex<double> > ratios;
-    for (double z = 2.0 ; z < 0.6 * D_s ; z += 1.0)
+    for (int k = 2 ; k < 24 ; ++k) // z = 2 m to 23 m, below 0.6 D_s
     {
+        const double z = k;
         ratios.push_back(((W(model, z + dz) - 2.0 * W(model, z) + W(model, z - dz))
                           / (dz * dz)) / W(model, z));
     }
@@ -160,8 +162,9 @@ TEST_F(EkmanUWCurrentTest, rotating_the_wind_preserves_the_current_magnitude)
     const double D_s = 40.0;
     const double angles[] = {0.0, 20.0, 45.0, 90.0, 180.0, 270.0};
 
-    for (double z = 1.0 ; z < 0.6 * D_s ; z += 2.0)
+    for (int k = 1 ; k < 24 ; k += 2) // z = 1 m to 23 m, below 0.6 D_s
     {
+        const double z = k;
         const double reference = std::abs(W(with_wind_orientation(seabed_file, 0.0, D_s), z));
         for (size_t i = 0 ; i < sizeof(angles) / sizeof(angles[0]) ; ++i)
         {

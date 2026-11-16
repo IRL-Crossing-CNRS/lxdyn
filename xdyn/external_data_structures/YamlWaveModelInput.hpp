@@ -59,7 +59,7 @@ struct YamlSpectrumFromRays
     YamlRays rays;                          //!< List of rays
     double depth{0.0};                           //!< Water depth (in meters): 0 for infinite depth
     YamlStretching stretching;              //!< Stretching model for orbital wave velocities (delta-stretching model)
-    std::string rays_file{};                //!< 'rays from file', empty for inline rays
+    std::string rays_file;                  //!< 'rays from file', empty for inline rays
     bool reload_rays_file{false};           //!< 'reload rays file': re-read it whenever it changes, for a sea state changing during the run
 };
 

@@ -69,7 +69,7 @@ WaveModel::WaveModel(const DiscreteDirectionalWaveSpectrum& spectrum, const int 
     check_sizes();
 }
 
-WaveModel::WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum) : flat_spectrum(spectrum), next_rays_check(), rays_file_time()
+WaveModel::WaveModel(const FlatDiscreteDirectionalWaveSpectrum& spectrum) : flat_spectrum(spectrum)
 {
     check_sizes();
     if (!flat_spectrum.rays_file.empty())

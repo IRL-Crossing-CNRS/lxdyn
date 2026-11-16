@@ -13,7 +13,6 @@
 #include <map>
 #include <sstream>
 
-#define _USE_MATH_DEFINE
 #include <cmath>
 #define PI M_PI
 
@@ -159,7 +158,13 @@ bool read_rays_csv(const std::string& path, FlatDiscreteDirectionalWaveSpectrum&
             }
             catch (const std::exception&)
             {
-                error = "'" + path + "', line " + std::to_string(row) + ": '" + cell + "' is not a number";
+                error = "'";
+                error += path;
+                error += "', line ";
+                error += std::to_string(row);
+                error += ": '";
+                error += cell;
+                error += "' is not a number";
                 return false;
             }
         }

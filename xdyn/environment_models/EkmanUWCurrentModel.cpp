@@ -27,12 +27,7 @@ EkmanUWCurrentModel::EkmanUWCurrentModel(const Input& input) :
     depth_from_wind(input.depth_from_wind),
     weather_file(input.weather_file),
     weather_from(layer_of(input.U10, input.wind_angle)),
-    weather_to(weather_from),
-    weather_start(0),
-    weather_duration(0),
-    has_weather(false),
-    next_weather_check(),
-    weather_file_time()
+    weather_to(weather_from)
 {
     if (depth_from_wind)
     {
