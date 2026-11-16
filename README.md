@@ -12,6 +12,16 @@ It was developed by SIREHNA through self-funded and collaborative projects, incl
 
 The [user documentation](https://sirehna_naval_group.gitlab.io/sirehna/xdyn/) is in French, hosted upstream, and incomplete in places.
 
+<!-- docs-site-banner -->
+## Documentation site
+
+<p align="center"><a href="https://irl-crossing-cnrs.github.io/LOTUSim/"><img src="https://raw.githubusercontent.com/IRL-Crossing-CNRS/LOTUSim/main/docs/documentation_site.png" alt="The home page of the documentation site" width="800"></a></p>
+
+<p align="center"><a href="https://irl-crossing-cnrs.github.io/LOTUSim/"><img src="https://raw.githubusercontent.com/IRL-Crossing-CNRS/LOTUSim/main/docs/documentation_banner.svg" alt="Documentation: irl-crossing-cnrs.github.io/LOTUSim" width="800"></a></p>
+
+<p align="center"><b><a href="https://irl-crossing-cnrs.github.io/LOTUSim/">Click here to open the documentation</a></b></p>
+<!-- /docs-site-banner -->
+
 ## Usage
 
 All you need is [podman](https://podman.io/):
